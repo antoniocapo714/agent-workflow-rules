@@ -29,7 +29,7 @@ These rules make the main session size the work before it launches anything, and
 
 **What they do differently:**
 
-- **Verification follows risk.** A copy change gets one test. A visual change goes to the user, who judges taste. Only shared code and behavior get a judge, and only work for other people gets verification by source.
+- **Verification follows risk.** A trivial edit gets one quick check. A visual change or a first draft goes to the user, who judges it. Only work that other work builds on gets a judge, whether it is code, an analysis or a plan, and only work for other people gets verification by source.
 - **Review and judge are one step.** One top-model agent reads the build's test results, reuses its captures and tries to prove the work is not done. A fix runs only if it finds a must.
 - **Every agent names its model.** Mechanical work goes to the small model, reading to the mid model, and judgment to the top model. Nothing inherits the session's model by accident.
 - **Every run has a size.** Each part is estimated in minutes and tokens, and a part over 60 minutes needs the user's permission before it launches.

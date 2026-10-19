@@ -3,6 +3,7 @@
 ## 0.2.0 · 2026-10-19
 
 - A part estimated over 60 minutes asks the user for permission before it launches, instead of being split by default.
+- Level 2 is now "Core": work that other work builds on, with or without code. Analyses, plans and research are checked against sources instead of tests and captures.
 
 ## 0.1.0 · 2026-10-19
 

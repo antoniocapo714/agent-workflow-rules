@@ -12,7 +12,7 @@ Rules for an AI agent that runs other agents. They work with any agent tool and 
 2. **Intent in three lines:** what kind of piece it is, who it is for and what it has to achieve.
 3. **Model and effort set explicitly on every agent**, and the table of model and effort per phase shown in the reply.
 4. **AUTHORITY:** the user's latest message, verbatim and dated.
-5. **Minimum FRAMES:** the framing the user used, plus one risk state.
+5. **Minimum FRAMES** when there are captures: the framing the user used, plus one risk state.
 6. **Estimate in minutes and in tokens.** If a part needs more than 60 minutes, ask the user for permission to go past that limit before launching it.
 7. **The script passes the mechanical check** (section 9). If it fails, it does not launch.
 
@@ -20,9 +20,9 @@ Rules for an AI agent that runs other agents. They work with any agent tool and 
 
 | Level | What it is | Shape | How it is checked |
 |---|---|---|---|
-| 0 · Trivial | Copy, a value, a label, anything reversible | Directly in the main session | One capture or one test from the main session |
-| 1 · Visual | Something the user will look at anyway: a board, a color, a framing, a sketch | Directly, or a single agent that builds | No judge: send the capture and the user judges taste |
-| 2 · Functional | Shared code, data models, behavior | The archetype workflow (section 4) | One review-and-judge step |
+| 0 · Trivial | A word, a value, a label, anything reversible | Directly in the main session | One quick check from the main session: a test, a capture or a reread |
+| 1 · Visual | Something the user will look at anyway: a board, a color, a framing, a sketch, a first draft | Directly, or a single agent that builds | No judge: send it and the user judges |
+| 2 · Core | Work that other work builds on: shared code, a data model, an analysis, a plan, a research synthesis | The archetype workflow (section 4) | One review-and-judge step against the ask, with tests, captures or sources as evidence |
 | 3 · For others | Decks, data sheets, anything that leaves the team | The deliverables flow (section 5) | Critique, then verification by source |
 
 - **Level 0 is never a workflow.** Level 1 is a single agent that does the work and checks itself against the ask, with no review, judge or fix step, in 30 minutes at most.
@@ -44,6 +44,7 @@ Estimate from your own measured durations. The heaviest build steps vary the mos
 | Interface change with new behavior | 2 | Archetype. Two reviews in parallel (visual and code) only if code and view both change |
 | Change to core logic or a data model | 2 | Archetype. Build on the top model at high effort |
 | Research | 2 | Mid-model readers in parallel, top-model synthesis and a top-model critic that tries to refute it |
+| Analysis, plan or recommendation a decision rests on | 2 | Archetype. The build gives each claim its source; the judge checks claims, reasoning and gaps against the ask |
 | Deck, data sheet or email with data for others | 3 | Deliverables flow (section 5) |
 
 ## 3. Model and effort per phase
@@ -83,6 +84,7 @@ Estimate from your own measured durations. The heaviest build steps vary the mos
 - A minor must is closed with the fix's test or capture, without another agent.
 - At most two audit rounds. Whatever is still open goes to the user.
 - **If the user says they will review it, drop the judge** and the work becomes level 1. If the workflow is already running, stop it right after the build (section 9).
+- **Without code or screens** (research, analysis, plans), the evidence is sources and reasoning, not tests and captures. The build returns each claim with its source, and the judge checks the claims, the reasoning and what is missing against the ask.
 - **Review against the intent, not only against the reference.** Design critique asks first whether there is one clear idea carried through every part, with good proportion, few parts and honest construction. The reference can be wrong too.
 
 ## 5. The deliverables flow (level 3)
