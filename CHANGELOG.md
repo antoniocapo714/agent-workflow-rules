@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0 · 2026-10-19
+
+- The guide is now specific to Claude Code: Haiku, Sonnet and Opus by name, the Workflow tool, `resumeFromRunId`, `journal.jsonl` and `TaskStop`.
+- `tools/workflow-lint.mjs` checks a workflow script before it launches. Comments in `meta` no longer count as the permission to go over 60 minutes.
+- The archetype gets a Haiku test step between the build and the judge.
+- New: naming and lint traps, request tracking, charts seen drawn, codes shown with their names, secrets checked by type and length, what an agent did not open reported as not verified, page and data published together, numbered decisions with a recommendation, Appendix A and getting started.
+- The two critique lenses say what each one reads for.
+
 ## 0.3.0 · 2026-10-19
 
 - The archetype and the checks speak of evidence: tests for code, captures for screens, sources for analysis. Section 8 is now "Checks".
