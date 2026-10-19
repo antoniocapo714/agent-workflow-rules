@@ -8,51 +8,53 @@ Follow the steps in order. When you finish, the project has a copy of the rules,
 
 ## 1. Ground rules
 
-- **Work only in the current project.** The project is the folder you were started in. If that folder is inside a git repository whose root is elsewhere, ask which one to use. The only thing you create outside the project is the temporary clone of step 2, and you delete it at the end.
-- **Never overwrite an existing file without showing the difference and asking.** That includes `CLAUDE.md`, the three copies and the request list.
+- **Work only in the current project.** Its root, `<root>` below, is the folder where you install. Run `git rev-parse --show-toplevel`. If the folder you were started in is not the root of the repository (the command prints another folder), ask the user where to install: in the folder you were started in, or at the root of the repository. Say what each choice affects. The folder you were started in keeps the install in that part of the repository, with its own `CLAUDE.md`, `docs/` and `tools/`. The root of the repository shares one install with every part of it. When the user cannot be asked, the safe choice is the folder you were started in: the report says so and asks the question. If the folder you were started in is the root of the repository, it is `<root>`. Outside a git repository, the folder you were started in is the project, and the report says so. Every project path in steps 3 to 7, in Updating and in Removing is under `<root>`, whichever folder you were started in: write it as `"<root>/..."` or run `cd "<root>"` first in the same command. The only thing you create outside the project is the temporary clone of step 2, and you delete it at the end.
+- **Never overwrite an existing file without showing the difference and asking.** That includes `CLAUDE.md`, the three copies and the request list. Steps 3, 4 and 6 say what to do when something is already there.
+- **When you cannot ask the user during the run, take the safe choice:** leave the existing file as it is, write the question in the report, and go on with the rest.
 - **Do not commit** unless the user asks.
 - **Never invent a value.** What you cannot find in the project goes in as `TBD` and is listed in the report.
 - **Do not open `.env` or other files with secrets,** not even to look for a port. If a value is only there, write `TBD` and say where the user can look.
+- **Quote every path in every command,** because a path can have spaces. The placeholders below are written that way, for example `"<clone>/RULES.md"`.
 
 ## 2. Get the files
 
-- If the user gave a local copy of the repository, use it.
+- If the user gave a local copy of the repository, read it in place: no temporary folder, and nothing to delete afterwards. `<clone>` below is that folder.
 - Otherwise, clone it into a temporary folder:
 
 ```bash
 mktemp -d
-git clone --depth 1 https://github.com/creative-context/agent-workflow-rules.git <tmp>/agent-workflow-rules
+git clone --depth 1 https://github.com/creative-context/agent-workflow-rules.git "<tmp>/agent-workflow-rules"
 ```
 
-`<tmp>` is the folder `mktemp -d` printed. Shell variables do not carry over between commands, so write the path out each time. Below, `<clone>` is `<tmp>/agent-workflow-rules`, or the local copy.
+`<tmp>` is the folder `mktemp -d` printed. Shell variables do not carry over between commands, so write the path out each time. `<clone>` below is `<tmp>/agent-workflow-rules`.
 
-If the clone fails, ask the user for a local copy. Do not run anything from the clone. Note the version: it is the first heading in its `CHANGELOG.md` (for example `## 0.6.0 · 2026-10-19`).
+If the clone fails, ask the user for a local copy (safe choice: stop and report). Do not run anything from `<clone>`. For the report, note the version, which is the first heading in `"<clone>/CHANGELOG.md"` (for example `## 0.6.1 · 2026-10-19`), and the commit, from `git -C "<clone>" rev-parse --short HEAD`. For a local copy, also note whether `git -C "<clone>" status --short` prints anything (uncommitted changes), or that it is not a git repository.
 
 ## 3. Copy the three files
 
 Copy, do not link. Keep the copies unchanged, so that a later update can be a copy.
 
-| From the repository | To the project |
+| From the repository | To the project (under `<root>`) |
 |---|---|
 | `RULES.md` | `docs/agent-workflow-rules.md` |
 | `tools/workflow-lint.mjs` | `tools/workflow-lint.mjs` |
 | `templates/level-2-archetype.js` | `tools/workflow-templates/level-2-archetype.js` |
 
-- Create the folders if they are missing.
-- If a destination file already exists and is identical (`cmp` says nothing), leave it.
-- If it exists and differs, show the difference (`diff -u <project file> <clone>/<repository file>`) and ask before replacing it. If the user chooses to keep their file, keep it and note it for step 4.
+- **If the destination is missing,** create its folder and copy the file: `mkdir -p "<root>/<folder>"`, then `cp "<clone>/<from>" "<root>/<to>"`, where `<folder>` is the folder part of `<to>`.
+- **If it exists and is identical** (`cmp "<clone>/<from>" "<root>/<to>"` prints nothing), leave it.
+- **If it exists and differs,** show the difference (`diff -u "<root>/<to>" "<clone>/<from>"`) and ask whether to replace it. Safe choice: keep the project's file. If the project's file stays, note it for step 4.
 - The links inside the copied rules point to the repository's layout (for example `templates/level-2-archetype.js`). Leave them as they are: the project block in step 4 gives the real paths.
 
 ## 4. CLAUDE.md
 
-The file is `CLAUDE.md` at the project root.
+The file is `"<root>/CLAUDE.md"`.
 
 - **If it is missing,** create it with only the section below.
-- **If it exists,** add the section at the end and do not touch the rest.
-- **If it already has a section called "Agents and workflows",** show it and ask before you change it.
-- **If the project has `AGENTS.md` but no `CLAUDE.md`,** create `CLAUDE.md` with the section, and ask whether it should also import `AGENTS.md` with a line that reads `@AGENTS.md`.
+- **If it exists,** add the section at the end, after one blank line. If the file does not end with a line end, add one first, then one blank line, then the section. Nothing else in the file changes; the rest stays byte for byte.
+- **If it already has an "Agents and workflows" section,** show it, never add a second one, and ask whether to replace it. Safe choice: leave it, and put the section you would have written in the report.
+- **If the project has `AGENTS.md` but no `CLAUDE.md`,** create `CLAUDE.md` with the section, and ask whether it should also import `AGENTS.md` with a line that reads `@AGENTS.md`. Safe choice: leave that line out.
 
-Use the heading level the file already uses for its sections (`##` if the file is new). The section looks like this; write it without the code fence:
+The heading is `##` when the file is new, has no sections or has only a `#` title. Otherwise it takes the level of the file's sections, for example `#` when the file has several `#` headings. The section looks like this; write it without the code fence:
 
 ```markdown
 ## Agents and workflows
@@ -76,20 +78,24 @@ The rules above are a copy of agent-workflow-rules <version>, kept unchanged. Th
 
 - The `@docs/agent-workflow-rules.md` line is plain text on its own line. Inside backticks or a code block, Claude Code does not import it.
 - Replace `<version>` with the version from step 2.
-- If the user chose to keep a different file in step 3, add to the first row's last cell which file it is, for example "Copied by the setup; `tools/workflow-lint.mjs` kept different at the user's choice". The update in the Updating section reads this.
+- If a file stayed different in step 3, add to the first row's last cell which file it is, for example "Copied by the setup; `tools/workflow-lint.mjs` kept different at the user's choice". The update in the Updating section reads this.
 
 ## 5. Fill in Appendix A
 
-Fill in the table in the project block of `CLAUDE.md`, never in the copied rules. For each row, look for the value in the project and write where it came from (the file and, when it helps, the key or line). What you do not find is `TBD`, and it goes in the report.
+Fill in the table in the project block of `CLAUDE.md`, never in the copied rules. For each row, look for the value in the project and write where it came from (the file and, when it helps, the key or line).
+
+- **Not found:** `TBD`, with "not found in <the places checked>" as its source, for example "not found in `package.json`, `Makefile`".
+- **Partly found:** the known part plus "TBD: <what is missing>", for example "`npm test`; TBD: how to run one case".
+- **Does not exist yet** (a scripts folder, a decisions file, a verification workflow): "none yet", with the places checked as its source and a suggested path in the report. Do not create the folder or file unless the user agrees.
 
 | Row | Where to look |
 |---|---|
-| Living request list | An existing list of the user's requests (`REQUESTS.md` or similar). If there is none, `REQUESTS.md` from step 6. If you find something that may be one, ask before using it |
+| Living request list | An existing list of the user's requests (`REQUESTS.md` or similar). If there is none, `REQUESTS.md` from step 6. If a file may be one, see step 6 |
 | Lock for builds and browsers | Scripts, docs or an existing `CLAUDE.md` that describe a shared lock for builds or browser runs. A package manager's lock file (`package-lock.json`, `bun.lock`, `poetry.lock`) is not this lock |
 | Test suite, owner and one case | `package.json` scripts, `Makefile`, `pyproject.toml`, `go.mod`, `Cargo.toml` or similar for the test command; the runner it calls for how to run one case (for example a file and a test name). The owner from `CODEOWNERS` if it exists, otherwise `TBD` |
 | Dev server | `.claude/launch.json` (the configuration's name and port), otherwise the `dev` or `start` script and the port its command or config sets |
 | Built pages or deliverables | The build script and its output folder (for example `dist/`, `build/`, `out/`), or a folder of documents for others |
-| Reused workflow scripts | An existing folder of Workflow scripts (files with `export const meta` and agent calls) |
+| Reused workflow scripts | An existing folder of Workflow scripts (files with `export const meta` and agent calls, not counting the files copied in step 3) |
 | Decisions file | `DECISIONS.md`, `docs/decisions/`, `docs/adr/` or similar |
 | Verification workflow for deliverables | An existing workflow script that verifies deliverables by source |
 
@@ -99,7 +105,8 @@ Fill in the table in the project block of `CLAUDE.md`, never in the copied rules
 
 ## 6. The request list
 
-If the project has no request list, create `REQUESTS.md`:
+- **If a file may already be the request list,** such as `TODO.md` or a tasks file, ask whether it is. Do not create `"<root>/REQUESTS.md"` until the user answers. Safe choice: create nothing, write "TBD: is `<file>` the request list?" in Appendix A, and put the install row in the report.
+- **If the project has no request list,** create `"<root>/REQUESTS.md"`:
 
 ```markdown
 # Requests
@@ -112,48 +119,57 @@ Statuses: to do, in progress, done, answered, not verified.
 |---|---|---|---|---|
 ```
 
-Add the install request as the first row: today's date, the user's words verbatim, "Install the agent workflow rules", and the status and evidence once step 7 has run (`done`, with the lint's output line).
+Before step 7, add the install request as a row: today's date, the user's words verbatim, "Install the agent workflow rules", status `in progress`. After step 7, set it to `done` with the lint's output line as evidence, or to `not verified` with the reason. If any copy was kept different in step 3, the status is `not verified` and the reason names the kept files: a lint result from a kept-different lint does not count as a pass.
 
 ## 7. Verify
 
-Run these from the project root:
+Run only these checks, from `<root>` (`cd "<root>"` first, in the same command as the checks, even if it is the folder you were started in). Do not run the project's own tests.
 
 ```bash
-node tools/workflow-lint.mjs tools/workflow-templates/level-2-archetype.js
-cmp <clone>/RULES.md docs/agent-workflow-rules.md
-cmp <clone>/tools/workflow-lint.mjs tools/workflow-lint.mjs
-cmp <clone>/templates/level-2-archetype.js tools/workflow-templates/level-2-archetype.js
-grep -n '^@docs/agent-workflow-rules.md$' CLAUDE.md && test -f docs/agent-workflow-rules.md
+node "tools/workflow-lint.mjs" "tools/workflow-templates/level-2-archetype.js"
+cmp "<clone>/RULES.md" "docs/agent-workflow-rules.md"
+cmp "<clone>/tools/workflow-lint.mjs" "tools/workflow-lint.mjs"
+cmp "<clone>/templates/level-2-archetype.js" "tools/workflow-templates/level-2-archetype.js"
+grep -n '^@docs/agent-workflow-rules.md$' "CLAUDE.md" && test -f "docs/agent-workflow-rules.md"
+git status --short
 ```
 
-- The lint must print a line that starts with `workflow-lint: ok`. If `node` is missing, use `bun`. If neither is installed, the lint is "not verified": say so in the report.
-- Each `cmp` must print nothing: the copies are identical to the repository. If the user chose to keep a different file in step 3, report that instead.
-- The `grep` must find the import line, and the file it points to must exist.
-- Then delete the temporary folder, `rm -rf <tmp>`, if you cloned. Never delete a local copy the user gave.
+What a pass prints:
+
+- **The lint:** a line that starts with `workflow-lint: ok`. If `tools/workflow-lint.mjs` was kept different in step 3, that line proves nothing about this version of the rules: report it as run with the project's older lint, not as a pass. If `node` is missing, use `bun`. If neither is installed, the lint is "not verified": say so in the report.
+- **Each `cmp`:** nothing. For a file kept different in step 3, `cmp` prints where it differs: report that instead.
+- **The `grep`:** the import line with its number, for example `7:@docs/agent-workflow-rules.md`; `test -f` prints nothing. If you left an existing section in step 4, report what they printed.
+- **`git status --short`:** the changes for the report. Outside a git repository, list the files you wrote.
+
+Then, if you cloned, delete the temporary folder: `rm -rf "<tmp>"`. Never delete a local copy the user gave.
 
 ## 8. Report to the user
 
 Keep it short:
 
-1. **Files added or changed,** each with one line on what changed.
-2. **Each Appendix A value** with where it came from.
-3. **The TBDs left to fill,** and where the user might find each one.
-4. **The checks:** the lint's output line and the result of the import check.
-5. **How to update later:** ask an agent "Update the agent workflow rules from https://github.com/creative-context/agent-workflow-rules in this project. Follow the Updating section of its SETUP.md."
+1. **Source and root:** the version and commit of the rules, whether a local copy had uncommitted changes, and the project root `<root>`: whether the user chose it, or you took the folder you were started in because you could not ask (outside git, that it is the folder you were started in).
+2. **Files added or changed,** from `git status --short`, each with one line on what changed.
+3. **Each Appendix A value** with where it came from.
+4. **The TBDs and "none yet" values,** where the user might find each one, and a suggested path for each "none yet".
+5. **The checks:** what each one printed.
+6. **The questions you could not ask,** each with the safe choice you took.
+7. **How to update later:** ask an agent "Update the agent workflow rules from https://github.com/creative-context/agent-workflow-rules in this project. Follow the Updating section of its SETUP.md."
 
 ## Updating
 
 1. Get the files again (step 2) and read the new `CHANGELOG.md` entries since the version in the project block.
-2. Before copying, run `diff -u <project file> <clone>/<repository file>` for each of the three files and show the user a short summary. Replace a file only when it is identical to the version the project block names, or the user agrees. Ask first when:
+2. Before copying, run `diff -u "<root>/<project file>" "<clone>/<repository file>"` for each of the three files and show the user a short summary. Replace a file only when it is identical to the version the project block names, or the user agrees. Ask first when:
    - the project block's first row says a file was kept different at install, or
    - the file differs in a way the `CHANGELOG.md` does not explain (the user may have edited it).
 
-   Then copy the files that were approved, to the same paths. Report each file you left as it was.
+   Then copy the files that were approved, to the same paths. Safe choice: keep the project's file. Report each file you left as it was.
 3. Keep the project block in `CLAUDE.md`. Change only the version in it, and any row a changelog entry asks for.
 4. Run the checks in step 7 and report as in step 8.
 
 ## Removing
 
-1. Delete `docs/agent-workflow-rules.md`, `tools/workflow-lint.mjs` and `tools/workflow-templates/level-2-archetype.js`, and the folders the setup created if they are empty.
-2. Remove the "Agents and workflows" section from `CLAUDE.md`. If the setup created `CLAUDE.md` and nothing else is in it, ask before deleting the file.
-3. `REQUESTS.md` holds the user's history: ask before deleting it.
+Every path here is under `<root>`, the folder where the setup installed (the project block in `CLAUDE.md` is in `"<root>/CLAUDE.md"`).
+
+1. Delete `"<root>/docs/agent-workflow-rules.md"`, `"<root>/tools/workflow-lint.mjs"` and `"<root>/tools/workflow-templates/level-2-archetype.js"`, and the folders the setup created if they are empty.
+2. Remove the "Agents and workflows" section from `"<root>/CLAUDE.md"`. If the setup created `CLAUDE.md` and nothing else is in it, ask before deleting the file.
+3. `"<root>/REQUESTS.md"` holds the user's history: ask before deleting it.

@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.6.0-2D72D2?labelColor=1A1D21" alt="Version 0.6.0">
+  <img src="https://img.shields.io/badge/version-0.6.1-2D72D2?labelColor=1A1D21" alt="Version 0.6.1">
   <img src="https://img.shields.io/badge/license-CC_BY_4.0-238551?labelColor=1A1D21" alt="CC BY 4.0 license">
   <img src="https://img.shields.io/badge/for-Claude_Code-8A8F98?labelColor=1A1D21" alt="For Claude Code">
 </p>

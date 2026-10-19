@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.6.1 · 2026-10-19
+
+`SETUP.md` leaves less to guess and handles files the project already has:
+
+- If the folder the agent was started in is not the root of the repository, it asks where to install, in the folder it was started in or at the root, and says what each choice affects. When the user cannot be asked, it uses the folder it was started in, and the report says so and asks the question. Outside a git repository, the folder it was started in is the project.
+- Whichever folder the user picks, every project path in the copy, request list, verify, update and remove steps is under `<root>`, so choosing the repository root when started in a subfolder puts the copies, `CLAUDE.md` and `REQUESTS.md` all in the root.
+- In `CLAUDE.md`, if the file does not end with a line end, the agent adds one first, then one blank line, then the section; nothing else in the file changes.
+- Every path in every command is quoted, placeholders included.
+- A local copy of the repository is read in place, with no temporary folder. The report names its commit and says if it has uncommitted changes.
+- The section in `CLAUDE.md` uses `##` when the file has only a `#` title or no sections, and otherwise the level of its sections. It goes after one blank line.
+- In Appendix A, a partly known value is the known part plus "TBD: <what is missing>", and a `TBD` row gives "not found in <the places checked>" as its source.
+- A value that does not exist yet is "none yet", with a suggested path in the report. The setup does not create it unless the user agrees.
+- The install row in the request list is "in progress" before the checks and "done", with its evidence, after them.
+- Each check says what a pass prints. The setup does not run the project's own tests, and lists the changes with `git status --short`.
+- When the user cannot be asked during the run, the agent takes the safe choice: it leaves the existing file as it is, writes the question in the report and goes on.
+- Conflicts and their safe choice: an existing "Agents and workflows" section is shown and never added twice; a different copy of the rules, the lint or the template is shown as a diff and kept; a file that may be the request list, such as `TODO.md`, is asked about before `REQUESTS.md` is created.
+- If any copy was kept different, the install row is `not verified` and names the kept files; a lint result from a kept-different lint is not a pass.
+- "none yet" also covers a missing verification workflow; the search for reused workflow scripts ignores the files copied in step 3.
+
 ## 0.6.0 · 2026-10-19
 
 - `SETUP.md` tells a Claude Code agent how to install the rules in the project it works in: copy the rules, the lint and the template unchanged, add an "Agents and workflows" section to `CLAUDE.md` with Appendix A filled in from the project and each value's source, create the request list, run the lint and report. It also covers updating and removing.
