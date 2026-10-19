@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 · 2026-10-19
+
+- `SETUP.md` tells a Claude Code agent how to install the rules in the project it works in: copy the rules, the lint and the template unchanged, add an "Agents and workflows" section to `CLAUDE.md` with Appendix A filled in from the project and each value's source, create the request list, run the lint and report. It also covers updating and removing.
+- `AGENTS.md` is for an agent working on this repository: the layout, the commands and the rules that keep the files in step. `CLAUDE.md` imports it.
+- The README's getting started has an "AI assistants" part with the one-line request, and its step 1 uses the same three paths and the `@docs/agent-workflow-rules.md` import as `SETUP.md`.
+- Updating shows the difference for each file and asks before replacing one the user kept different or edited; the first row of the project block records a file kept at install.
+- A value that comes from a tool's documented default or syntax, not from the project, names that source or is `TBD`.
+
 ## 0.5.0 · 2026-10-19
 
 - The template is its own file, `templates/level-2-archetype.js`. RULES.md and the README link to it, and the README runs the lint on it.

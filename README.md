@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.5.0-2D72D2?labelColor=1A1D21" alt="Version 0.5.0">
+  <img src="https://img.shields.io/badge/version-0.6.0-2D72D2?labelColor=1A1D21" alt="Version 0.6.0">
   <img src="https://img.shields.io/badge/license-CC_BY_4.0-238551?labelColor=1A1D21" alt="CC BY 4.0 license">
   <img src="https://img.shields.io/badge/for-Claude_Code-8A8F98?labelColor=1A1D21" alt="For Claude Code">
 </p>
@@ -57,9 +57,27 @@ This guide makes the main session size the work before it launches anything, and
 
 ## Getting started
 
-1. **Copy `RULES.md`, `tools/workflow-lint.mjs` and `templates/level-2-archetype.js` into your project.** Point Claude Code at the rules from your `CLAUDE.md`, for example with a line that reads `@RULES.md`.
+1. **Copy three files into your project, unchanged, to these paths** (an agent does this for you, see below):
+
+   | From this repository | To your project |
+   |---|---|
+   | `RULES.md` | `docs/agent-workflow-rules.md` |
+   | `tools/workflow-lint.mjs` | `tools/workflow-lint.mjs` |
+   | `templates/level-2-archetype.js` | `tools/workflow-templates/level-2-archetype.js` |
+
+   Then point Claude Code at the rules from your `CLAUDE.md`, in an "Agents and workflows" section (Appendix A of the rules, for your project), with a line on its own that reads `@docs/agent-workflow-rules.md`.
 2. **Fill in [Appendix A](RULES.md#appendix-a-your-projects-specifics)** with your project's request list, build lock, test suite and dev server.
-3. **For each workflow,** start from [`templates/level-2-archetype.js`](templates/level-2-archetype.js), fill in every `…`, run the lint, and show the phase table before launching.
+3. **For each workflow,** start from your copy, `tools/workflow-templates/level-2-archetype.js` (the original is [`templates/level-2-archetype.js`](templates/level-2-archetype.js) in this repository), fill in every `…`, run the lint, and show the phase table before launching.
+
+### AI assistants
+
+To have a Claude Code agent install the rules in the project it works in, give it this line:
+
+> Install the agent workflow rules from https://github.com/creative-context/agent-workflow-rules in this project. Follow its SETUP.md.
+
+[`SETUP.md`](SETUP.md) tells the agent where to copy each file, how to fill in Appendix A from the project, what to ask before changing anything, and what to report.
+
+To work on this repository itself, an agent reads [`AGENTS.md`](AGENTS.md), which `CLAUDE.md` imports.
 
 ## The lint
 
