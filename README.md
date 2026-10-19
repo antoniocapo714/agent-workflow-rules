@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.2.0-2D72D2?labelColor=1A1D21" alt="Version 0.2.0">
+  <img src="https://img.shields.io/badge/version-0.3.0-2D72D2?labelColor=1A1D21" alt="Version 0.3.0">
   <img src="https://img.shields.io/badge/license-CC_BY_4.0-238551?labelColor=1A1D21" alt="CC BY 4.0 license">
   <img src="https://img.shields.io/badge/works_with-any_agent-8A8F98?labelColor=1A1D21" alt="Works with any agent">
 </p>
@@ -25,7 +25,7 @@
 
 An agent that can launch other agents tends to overbuild. Every change gets a judge, every fix gets another review, a fan-out inherits the most expensive model, and nobody knows how long the run will take or how many tokens it will burn.
 
-These rules make the main session size the work before it launches anything, and verify each change according to its risk. They are one Markdown file, [`RULES.md`](RULES.md), and they work with any agent tool, any model provider and any project.
+These rules make the main session size the work before it launches anything, and verify each change according to its risk. They are one Markdown file, [`RULES.md`](RULES.md), and they work with any agent tool, any model provider and any project. The template at the end is for Claude Code.
 
 **What they do differently:**
 
@@ -48,9 +48,10 @@ These rules make the main session size the work before it launches anything, and
 | [5. The deliverables flow](RULES.md#5-the-deliverables-flow-level-3) | Outline approval, critique, then verification by source |
 | [6. What every prompt carries](RULES.md#6-what-every-prompt-carries) | AUTHORITY, FRAMES, RULES, TASK and a schema |
 | [7. Spend tokens on purpose](RULES.md#7-spend-tokens-on-purpose) | Paths instead of reports, measured images, estimates against real figures |
-| [8. Tests](RULES.md#8-tests) | Targeted tests, run once |
+| [8. Checks](RULES.md#8-checks) | Targeted checks, run once: tests, captures or sources |
 | [9. Mechanical check and operation](RULES.md#9-mechanical-check-and-operation) | The pre-launch checklist, and how to stop or change a running workflow |
 | [10. When it ends](RULES.md#10-when-it-ends) | Evidence, a short report, real figures against the estimate |
+| [Template](RULES.md#template-the-level-2-archetype-in-claude-code) | The level-2 archetype as a Claude Code workflow script |
 
 ## Getting started
 

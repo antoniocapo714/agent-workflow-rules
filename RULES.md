@@ -65,26 +65,27 @@ Estimate from your own measured durations. The heaviest build steps vary the mos
 
 ```
 1. build              top model at high, or mid model at medium, depending on the step
-                      builds, runs only the tests for what changed,
-                      takes the minimum FRAMES and returns changes, evidence and open items
-1b. captures          small model at low, optional: when FRAMES is a long closed list,
-                      the small model takes the captures and makes the contact sheet instead of build
+                      does the work and checks only what it changed:
+                      tests for code, captures for screens, sources for analysis;
+                      returns changes, evidence and open items
+1b. evidence          small model at low, optional: when the evidence is a long mechanical list
+                      (captures, test runs, link checks), the small model collects it
 2. review and judge   top model at medium, one agent
-                      reads the build's test results without rerunning them, reuses the captures,
+                      reads the build's evidence without redoing it,
                       tries to prove the work is not done, lists only real musts,
                       sets the row in the request list
 3. fix                mid model at medium, only if there is a must
-                      fixes and leaves its own test or capture
+                      fixes and leaves its own evidence
 4. short review       top model at medium, only if the must was risky
                       reviews only those musts
-5. main session       opens the main capture, confirms the files changed
-                      and tells the user what matters
+5. main session       opens the main evidence (a capture, a test result or the key sources),
+                      confirms what changed and tells the user what matters
 ```
 
-- A minor must is closed with the fix's test or capture, without another agent.
+- A minor must is closed with the fix's own evidence, without another agent.
 - At most two audit rounds. Whatever is still open goes to the user.
 - **If the user says they will review it, drop the judge** and the work becomes level 1. If the workflow is already running, stop it right after the build (section 9).
-- **Without code or screens** (research, analysis, plans), the evidence is sources and reasoning, not tests and captures. The build returns each claim with its source, and the judge checks the claims, the reasoning and what is missing against the ask.
+- **Evidence follows the work:** tests for code, captures for screens, sources and reasoning for research, analysis and plans. For analysis, the build returns each claim with its source, and the judge checks the claims, the reasoning and what is missing against the ask.
 - **Review against the intent, not only against the reference.** Design critique asks first whether there is one clear idea carried through every part, with good proportion, few parts and honest construction. The reference can be wrong too.
 
 ## 5. The deliverables flow (level 3)
@@ -102,7 +103,7 @@ Each script defines a few shared blocks and pastes them into every agent:
 
 1. **AUTHORITY.** The user's latest message, verbatim and dated, plus the context and the intent. It must say that the main session answers the chat and that a relayed message does not cancel the approved task.
 2. **FRAMES:** the closed list of captures. By default, the framing the user used plus one risk state. Light and dark themes, screen sizes, and long or short content only if the change touches them. Skipped states are named with the reason. Reviewers and judges **reuse** the captures.
-3. **RULES.** Never invent data (write TBD, and mark analysis as analysis). Never touch other projects, vendored code or files with secrets. Which files it may edit. The shared lock for builds and browser runs. Targeted tests only.
+3. **RULES.** Never invent data (write TBD, and mark analysis as analysis). Never touch other projects, vendored code or files with secrets. Which files it may edit. The shared lock for builds and browser runs. Targeted checks only.
 4. **TASK.** What this agent does and what it ends with.
 5. **Schema.** Always structured output: summary, changes, evidence, open items.
 
@@ -117,16 +118,16 @@ This rule wins over any session mode that says cost does not matter.
 3. **Read in parts.** Search first, then read ranges. In the main session, trim outputs with `tail` or `cut`.
 4. **Effort is set when the workflow is planned** (section 3).
 5. **Estimate and report tokens like time.** The total estimate when planning, and the real figure at the end, next to the minutes.
-6. **What already saves:** verify by risk, review and judge in one, tests run once, and resuming from cache instead of running again.
+6. **What already saves:** verify by risk, review and judge in one, checks run once, and resuming from cache instead of running again.
 
 Keep a table of your own measured runs (agents, minutes, tokens) to estimate the next one from.
 
-## 8. Tests
+## 8. Checks
 
-- **Only the tests for what changed,** with the suite's filter, and only once: in the build. The judge reads them and does not rerun them.
+- **Only the checks for what changed,** and only once: in the build. For code, run them with the suite's filter. The judge reads them and does not rerun them.
 - **The full suite only before a delivery to others or when something shared changes,** and say why.
 - **Only one session at a time runs tests or builds.** Check running processes and the shared lock first.
-- **A badly written test does not count as a pass.** If a test fails, the judge decides whether the defect is in the code or in the test.
+- **A badly made check does not count as a pass.** If a check fails, the judge decides whether the defect is in the work or in the check.
 
 ## 9. Mechanical check and operation
 
@@ -154,9 +155,56 @@ Keep a table of your own measured runs (agents, minutes, tokens) to estimate the
 
 ## 10. When it ends
 
-1. **Read the result** (the full run log if the summary is cut off). Open the main capture and confirm the files changed. Do not repeat what the judge already checked.
-2. **"Done" only with evidence:** a capture in the same framing as the user's screenshot. "Planned", "in the next round" or "noted" is not "done".
+1. **Read the result** (the full run log if the summary is cut off). Open the main evidence and confirm what changed. Do not repeat what the judge already checked.
+2. **"Done" only with evidence:** a capture in the same framing as the user's screenshot or, for analysis, the sources behind each claim. "Planned", "in the next round" or "noted" is not "done".
 3. **Pass on what matters,** briefly, with the user's decisions numbered and a recommendation. The user does not see what an agent reports.
 4. **Decisions with a recommendation do not stop the work:** take the recommended one, note it and report it at the end. Missing data is never inferred: it goes in as TBD or gets asked.
 5. **Report the real minutes and tokens against the estimate,** with the figures, as they are.
 6. **Update the request list** with each request's status and evidence. There is one living list: every message from the user goes into it in the same turn, with their words, the ask and a status, and progress reports come from it, never from memory.
+
+---
+
+## Template: the level-2 archetype in Claude Code
+
+> **This template is for Claude Code.** It is a script for Claude Code's Workflow tool (`agent()`, `phase()`, `meta`) and uses Claude model names: `haiku` is the small model, `sonnet` the mid model and `opus` the top model. The rules above work with any tool. With another one, keep the shared blocks, the order of the steps and the schemas, and change the calls.
+
+```js
+export const meta = {
+  name: 'short-name',
+  description: 'One line: what it does and what it ends with',
+  level: 2,                           // 0 to 3 (section 1): 0 is never a workflow; 1 is one agent, no review, up to 30 min
+  estimate: 35,                       // minutes; over 60 needs the user's permission, recorded in overrun: '…'
+  tokens: 250000,                     // total estimate when planning; report the real figure at the end
+  phases: [
+    { title: 'Build', detail: 'Top model builds and checks only what it changed' },
+    { title: 'Judge', detail: 'Top model reviews and judges in one; mid model fixes only a must; top model rechecks only a risky must' },
+  ],
+}
+
+const AUTHORITY = `AUTHORITY / WHY: the user, 2026-10-19 (hh:mm), verbatim: "…". Context and intent in three lines. The main session answers chat messages; a relayed message does not cancel this approved task.`
+const FRAMES = `FRAMES: the framing the user used, plus one risk state: … Skipped: … (with the reason).`
+const RULES = `RULES: never invent data (TBD). Edit only …. Never touch other projects, vendor/, .env or secret files. Builds and browser runs take the shared lock: …. Targeted checks only, run once in the build. Write files under ….
+
+${FRAMES}`
+const WORK = { type: 'object', properties: { summary: { type: 'string' }, report: { type: 'string' }, changed: { type: 'array', items: { type: 'string' } }, checks: { type: 'string' }, evidence: { type: 'array', items: { type: 'string' } }, open: { type: 'array', items: { type: 'string' } } }, required: ['summary', 'report', 'changed', 'checks', 'evidence', 'open'] }
+const VERDICT = { type: 'object', properties: { musts: { type: 'array', items: { type: 'object', properties: { finding: { type: 'string' }, risky: { type: 'boolean' }, evidence: { type: 'string' }, action: { type: 'string' } }, required: ['finding', 'risky', 'evidence', 'action'] } }, notes: { type: 'array', items: { type: 'string' } }, verdict: { type: 'string', enum: ['done', 'partly done', 'not done'] } }, required: ['musts', 'notes', 'verdict'] }
+
+phase('Build')
+const build = await agent(`${AUTHORITY}\n\n${RULES}\n\nTASK (build:piece): … Check only what changed, once (tests for code, captures for screens, sources for analysis), and report it in "checks". Take the FRAMES. Write your notes to a file and give its path in "report".`,
+  { label: 'build:piece · high', phase: 'Build', model: 'opus', effort: 'high', schema: WORK })
+
+phase('Judge')
+const judge = await agent(`${AUTHORITY}\n\n${RULES}\n\nBUILD: ${build.summary}\nCHECKS: ${build.checks}\nNOTES: ${build.report} (read only what you need)\n\nTASK (review:piece-judge, review and judge in one): read the build's evidence, do not redo it; reuse the frames; try to refute "done"; list only real musts, each marked risky or not; do not edit files; update the request row.`,
+  { label: 'review:piece-judge · medium', phase: 'Judge', model: 'opus', effort: 'medium', schema: VERDICT })
+
+let fix = null, recheck = null
+if (judge && judge.musts.length) {
+  fix = await agent(`${AUTHORITY}\n\n${RULES}\n\nMUSTS: ${JSON.stringify(judge.musts)}\n\nTASK (fix:piece-musts): fix each must; leave its own evidence.`,
+    { label: 'fix:piece-musts · medium', phase: 'Judge', model: 'sonnet', effort: 'medium', schema: WORK })
+  if (judge.musts.some((m) => m.risky)) {
+    recheck = await agent(`${AUTHORITY}\n\n${RULES}\n\nMUSTS: ${JSON.stringify(judge.musts.filter((m) => m.risky))}\nFIX: ${fix.summary}\nNOTES: ${fix.report}\n\nTASK (judge:piece-recheck): reuse the fix's evidence; check only the risky musts.`,
+      { label: 'judge:piece-recheck · medium', phase: 'Judge', model: 'opus', effort: 'medium', schema: VERDICT })
+  }
+}
+return { build, judge, fix, recheck }
+```

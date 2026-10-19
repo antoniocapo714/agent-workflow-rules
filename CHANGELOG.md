@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 · 2026-10-19
+
+- The archetype and the checks speak of evidence: tests for code, captures for screens, sources for analysis. Section 8 is now "Checks".
+- "Done" for analysis means the sources behind each claim.
+- Template: the level-2 archetype as a Claude Code workflow script, marked as Claude Code only.
+
 ## 0.2.0 · 2026-10-19
 
 - A part estimated over 60 minutes asks the user for permission before it launches, instead of being split by default.
