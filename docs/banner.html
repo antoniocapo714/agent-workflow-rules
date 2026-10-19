@@ -1,0 +1,78 @@
+<!doctype html>
+<!-- README banner. Drawn at the size GitHub shows it (880×440) and captured at 3× with headless Chrome:
+     chrome --headless=new --hide-scrollbars --force-device-scale-factor=3 --window-size=880,440 \
+       --screenshot=docs/banner.png docs/banner.html -->
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<title>Agent workflow rules</title>
+<style>
+  :root {
+    --bg: #050506;
+    --panel: #0d0e10;
+    --line: #23262b;
+    --chip: #17191d;
+    --ink: #f2f4f6;
+    --ink-2: #a3a9b1;
+    --ink-3: #7c838c;
+    --l0: #3a4250;
+    --l1: #2c4f86;
+    --l2: #2d72d2;
+    --l3: #6fa6e8;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 880px; height: 440px; overflow: hidden; }
+  body { background: var(--bg); color: var(--ink); font: 14px/1.4 Inter, system-ui, sans-serif; position: relative; }
+
+  .intro { position: absolute; left: 44px; top: 0; bottom: 0; width: 300px; display: flex; flex-direction: column; justify-content: center; }
+  .intro h1 { font-size: 44px; line-height: 1.08; font-weight: 600; letter-spacing: -0.02em; }
+  .intro p { margin-top: 20px; font-size: 18px; line-height: 1.5; color: var(--ink-2); }
+  .intro .meta { margin-top: 18px; font-size: 13px; color: var(--ink-3); letter-spacing: 0.01em; }
+
+  .panel { position: absolute; left: 384px; top: 30px; width: 540px; height: 440px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px 24px; }
+  .panel h2 { font-size: 18px; font-weight: 600; }
+  .panel .sub { margin-top: 2px; font-size: 13px; color: var(--ink-3); }
+
+  .rows { margin-top: 14px; }
+  .row { padding: 9px 0 10px; border-top: 1px solid var(--line); }
+  .head { display: flex; align-items: baseline; gap: 10px; }
+  .level { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px 0 4px; border-radius: 11px; background: var(--chip); font-size: 13px; font-weight: 500; }
+  .level i { width: 16px; height: 16px; border-radius: 8px; font: normal 600 11px/16px Inter, sans-serif; text-align: center; color: #fff; }
+  .what { font-size: 13px; color: var(--ink-3); }
+  .flow { margin-top: 7px; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+  .step { height: 26px; display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); white-space: nowrap; }
+  .step b { font-weight: 500; font-size: 12px; color: var(--ink-3); }
+  .arrow { color: var(--ink-3); }
+</style>
+</head>
+<body>
+  <div class="intro">
+    <h1>Agent workflow rules</h1>
+    <p>For an AI agent that runs other agents: size the work by risk and check each change once.</p>
+    <div class="meta">One file · any agent · any model</div>
+  </div>
+
+  <div class="panel">
+    <h2>Verify by risk</h2>
+    <div class="sub">RULES.md · section 1</div>
+    <div class="rows">
+      <div class="row">
+        <div class="head"><span class="level"><i style="background:var(--l0)">0</i>Trivial</span><span class="what">Copy, a value, a label</span></div>
+        <div class="flow"><span class="step">Main session</span><span class="arrow">→</span><span class="step">One test</span></div>
+      </div>
+      <div class="row">
+        <div class="head"><span class="level"><i style="background:var(--l1)">1</i>Visual</span><span class="what">A board, a color, a sketch</span></div>
+        <div class="flow"><span class="step">One agent</span><span class="arrow">→</span><span class="step">The user judges</span></div>
+      </div>
+      <div class="row">
+        <div class="head"><span class="level"><i style="background:var(--l2)">2</i>Functional</span><span class="what">Shared code, behavior</span></div>
+        <div class="flow"><span class="step">Build <b>top</b></span><span class="arrow">→</span><span class="step">Review and judge <b>top</b></span><span class="arrow">→</span><span class="step">Fix if a must <b>mid</b></span></div>
+      </div>
+      <div class="row">
+        <div class="head"><span class="level"><i style="background:var(--l3);color:#0d0e10">3</i>For others</span><span class="what">Decks, data for other people</span></div>
+        <div class="flow"><span class="step">Outline approved</span><span class="arrow">→</span><span class="step">Critique</span><span class="arrow">→</span><span class="step">Verify by source</span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
