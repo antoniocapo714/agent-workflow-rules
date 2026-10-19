@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.1.0-2D72D2?labelColor=1A1D21" alt="Version 0.1.0">
+  <img src="https://img.shields.io/badge/version-0.2.0-2D72D2?labelColor=1A1D21" alt="Version 0.2.0">
   <img src="https://img.shields.io/badge/license-CC_BY_4.0-238551?labelColor=1A1D21" alt="CC BY 4.0 license">
   <img src="https://img.shields.io/badge/works_with-any_agent-8A8F98?labelColor=1A1D21" alt="Works with any agent">
 </p>
@@ -32,7 +32,7 @@ These rules make the main session size the work before it launches anything, and
 - **Verification follows risk.** A copy change gets one test. A visual change goes to the user, who judges taste. Only shared code and behavior get a judge, and only work for other people gets verification by source.
 - **Review and judge are one step.** One top-model agent reads the build's test results, reuses its captures and tries to prove the work is not done. A fix runs only if it finds a must.
 - **Every agent names its model.** Mechanical work goes to the small model, reading to the mid model, and judgment to the top model. Nothing inherits the session's model by accident.
-- **Every run has a size.** Each part is estimated in minutes and tokens, and none runs over 60 minutes. A larger job stops halfway with something the user can see.
+- **Every run has a size.** Each part is estimated in minutes and tokens, and a part over 60 minutes needs the user's permission before it launches.
 - **The user's words travel with the task.** Every prompt carries the user's latest message, verbatim, so a relayed message never derails an approved task.
 - **"Done" means evidence.** A capture in the same framing as the user's screenshot, not "planned" or "noted".
 

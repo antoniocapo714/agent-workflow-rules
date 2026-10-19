@@ -13,7 +13,7 @@ Rules for an AI agent that runs other agents. They work with any agent tool and 
 3. **Model and effort set explicitly on every agent**, and the table of model and effort per phase shown in the reply.
 4. **AUTHORITY:** the user's latest message, verbatim and dated.
 5. **Minimum FRAMES:** the framing the user used, plus one risk state.
-6. **Estimate in minutes and in tokens.** No part runs over 60 minutes.
+6. **Estimate in minutes and in tokens.** If a part needs more than 60 minutes, ask the user for permission to go past that limit before launching it.
 7. **The script passes the mechanical check** (section 9). If it fails, it does not launch.
 
 ## 1. Verify by risk
@@ -30,7 +30,7 @@ Rules for an AI agent that runs other agents. They work with any agent tool and 
 - **If the user asks for speed, drop one level,** and say so in the launch line.
 - **If the user asks to do it without agents, do it without agents.** That instruction wins over any session mode.
 - **If the user asks a question, answer it before executing.** That includes questions that sound rhetorical, such as "do you follow me?". If their latest message can be read as "wait", launch nothing until they clarify.
-- **Size it in one line:** the pieces, the model of each phase and the time, marked as an estimate. If a part runs over 60 minutes, part A builds and stops with something the user can look at, and part B starts on their OK. If a step exists only out of habit, remove it and say so.
+- **Size it in one line:** the pieces, the model of each phase and the time, marked as an estimate. If a part needs more than 60 minutes, ask the user before launching it: run it whole, or split it so part A builds and stops with something they can look at, and part B starts on their OK. If a step exists only out of habit, remove it and say so.
 
 Estimate from your own measured durations. The heaviest build steps vary the most: estimate them with margin.
 
@@ -135,7 +135,7 @@ Keep a table of your own measured runs (agents, minutes, tokens) to estimate the
    - A label on every agent in the form `role:item · effort`, with the same effort the agent runs at.
    - The AUTHORITY block in every prompt.
    - The level, 0 to 3, and a shape that matches it (section 1).
-   - The estimate in minutes, and the reason if it is over 60.
+   - The estimate in minutes, and the user's permission if it is over 60.
    - The token estimate for the whole run.
    - A `FRAMES:` block when a prompt asks for captures, and "reuse" in reviewers and judges.
    - No full suite unless section 8 allows it.
