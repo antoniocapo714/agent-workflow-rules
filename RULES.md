@@ -2,7 +2,7 @@
 
 A practical guide to splitting work across subagents in Claude Code without overspending or losing control. Each rule says what to do and how to apply it. Appendix A is a template for what is specific to your project.
 
-The guide comes with `tools/workflow-lint.mjs`, which checks a workflow script before it launches: `bun tools/workflow-lint.mjs <script.js>` (it also runs with `node`).
+The guide comes with `tools/workflow-lint.mjs`, which checks a workflow script before it launches: `bun tools/workflow-lint.mjs <script.js>` (it also runs with `node`). The template for a level-2 workflow is [templates/level-2-archetype.js](templates/level-2-archetype.js).
 
 **Terms.** The *main session* is the Claude Code session the user talks to. A *workflow* is a script for Claude Code's Workflow tool that runs several agents in phases. A *must* is a finding that blocks "done".
 
@@ -27,12 +27,12 @@ The guide comes with `tools/workflow-lint.mjs`, which checks a workflow script b
 | 2 · Core | Work that other work builds on: shared code, data, a model, behavior, an analysis, a plan or a research synthesis | The archetype workflow (section 4) | One review-and-judge step against the ask, with tests, captures or sources as evidence |
 | 3 · For others | Decks, data sheets, anything that leaves the team | The deliverables flow (section 5) | Critique, then verification by source |
 
-- **Every workflow declares its level in `meta.level`.** Level 0 is never a workflow. Level 1 is a single agent that does the work and checks itself against the ask, with no review, judge or fix step, in 30 minutes at most. The lint enforces both.
+- **Every workflow declares its level in `meta.level`.** Level 0 is never a workflow. Level 1 is a single agent that does the work and checks itself against the ask, with no review, judge or fix step, in 30 minutes at most. The lint enforces both. Part A of a split run (section 4) declares `part: 'A'` in `meta`; it ends after the build, so the lint accepts a level-2 or level-3 part A with no review, judge or verify step. Part B and every other level-2 or level-3 workflow still need one.
 - **Size check before any workflow.** Three questions: which level is it, what is the least that answers the user's message, and what can the main session do in under 10 minutes. Whatever comes from what the user just sent (photos, crops, numbers, a measurement), the main session works out and hands to the agent as data. If the user names a source, use only that source.
 - **If the user asks for speed, drop one level,** and say so in the launch line.
 - **If the user asks to do it without agents, do it without agents.** That instruction wins over any session mode.
 - **If the user asks a question, answer it before executing.** That includes questions that sound rhetorical, such as "do you follow me?". If their latest message can be read as "wait", launch nothing until they clarify.
-- **Size it in one line:** the pieces, the model of each phase and the time, marked as an estimate. If a part needs more than 60 minutes, ask before launching it: run it whole, or split it so part A builds and stops with something the user can look at, and part B starts on their OK. If a step exists only out of habit, remove it and say so.
+- **Size it in one line:** the pieces, the model of each phase and the time, marked as an estimate. If a part needs more than 60 minutes, ask before launching it: run it whole, or split it so part A builds and stops with something the user can look at, and part B starts on their OK (part A declares `part: 'A'` in `meta`, section 4). If a step exists only out of habit, remove it and say so.
 
 ## 2. Which shape to use, by task
 
@@ -72,7 +72,8 @@ The guide comes with `tools/workflow-lint.mjs`, which checks a workflow script b
                       for analysis, each claim with its source
 2. test               Haiku at low
                       runs the mechanical checks (syntax, tests for what changed,
-                      calculations against the data, text scans) and reports them
+                      calculations against the data, text scans) and reports them;
+                      if the checks are a single command, the main session runs it
 3. review and judge   Opus at medium, one agent
                       reads the test results and the evidence without redoing them,
                       tries to prove the work is not done, lists only real musts,
@@ -86,8 +87,9 @@ The guide comes with `tools/workflow-lint.mjs`, which checks a workflow script b
 ```
 
 - A minor must is closed with the fix's own evidence, without another agent.
-- At most two audit rounds. Whatever is still open goes to the user.
-- **If the user says they will review it, drop the judge** and the work becomes level 1. If the workflow is already running, stop it right after the build (section 9).
+- At most two audit rounds, and the second only if the first found a must. Whatever is still open goes to the user.
+- **If the checks are a single command (a script), the main session runs it and there is no test agent.** An agent spends tens of thousands of tokens before its first command: a test agent that ran one command used 71 thousand. In a workflow, part A ends after the build and declares `part: 'A'` in `meta`, so the lint accepts it with no review, judge or verify step; the main session runs the command, and part B, a second workflow, runs the review and judge and keeps its judge (section 9: a workflow that depends on another).
+- **If the user says they will review it, drop the test and judge steps:** the build checks its own work against the ask, and the run becomes level 1 (one agent, 30 minutes at most). If the workflow is already running, stop it right after the build (section 9).
 - **Evidence follows the work:** tests for code, captures for screens, sources and reasoning for research, analysis and plans. For analysis, the build returns each claim with its source, and the judge checks the claims, the reasoning and what is missing against the ask.
 - **Review against the intent, not only against the reference.** The reference can be wrong too.
 
@@ -100,7 +102,8 @@ For decks, data sheets and anything that leaves the team:
 3. Verification by source comes last:
    - claims are grouped by URL, and each page is opened once;
    - Sonnet extracts the exact text and Opus judges;
-   - prices, limits, security and compliance get two independent Opus judges, and if they disagree, the claim stays out.
+   - prices, limits, security, compliance and data residency get two independent Opus judges, and if they disagree, the claim stays out;
+   - if a fix adds claims, verify only those, until no new ones appear.
 4. In internal documents it is enough to compare each quote against the saved one, in a script and without agents. Only the quotes that do not match go on to reading and judging.
 5. Data needs a source; your own analysis does not, but it is marked as analysis and has to be consistent with the data.
 
@@ -138,6 +141,7 @@ Keep a table of your own measured runs (agents, minutes, tokens) to estimate the
 ## 8. Checks
 
 - **Only the checks for what changed,** and only once, in the test step. For code, run them with the suite's filter. The judge reads them and does not rerun them.
+- **If the checks are a single command (a script), the main session runs it and there is no test agent:** an agent spends tens of thousands of tokens before its first command (a test agent that ran one command used 71 thousand). In a workflow, the run splits in two around the command (section 4).
 - **The full suite only before a delivery to others or when something shared changes,** and say why.
 - **Only one session at a time builds or runs tests.** Check with `ps` and the shared lock first.
 - **A badly made check does not count as a pass.** If it fails, the judge decides whether the defect is in the work or in the check.
@@ -153,21 +157,23 @@ Keep a table of your own measured runs (agents, minutes, tokens) to estimate the
 
 **Before launching:**
 
-1. Write the script to a file and run `bun tools/workflow-lint.mjs <script.js>`. It checks:
+1. Write the script to a file and run `bun tools/workflow-lint.mjs <script.js>`. It checks exactly this:
+   - `meta.description`;
+   - `meta.level` from 0 to 3, with its limits: 0 is never a workflow; 1 is one agent with no review, judge, verify or fix step, in 30 minutes at most; 2 and 3 have at least one review, judge or verify step, except part A of a split run, which declares `part: 'A'` in `meta` and ends after the build (part B still needs the judge);
+   - at least one `agent` call in the script;
    - explicit model and effort on every agent, and the highest model only with `--allow-fable`;
-   - labels in the form `role:item · effort`, with the same effort the agent runs at;
-   - the AUTHORITY block;
-   - `meta.level` from 0 to 3, and a shape that matches it (section 1);
-   - `meta.estimate` in minutes, and `meta.overrun` with the user's permission (their words and the date) if it is over 60;
+   - labels in the form `role:item · effort`, with a role from the list below and the same effort the agent runs at;
+   - the AUTHORITY block in every agent's prompt;
+   - `meta.estimate` in minutes, and, when it is over 60, `meta.overrun` with the user's permission and its date (YYYY-MM-DD);
    - `meta.tokens` with the estimated total;
-   - the `FRAMES:` block when a prompt asks for captures, and the word "reuse" in reviewers and judges;
-   - no full suite without `--allow-full-suite`;
-   - no prompt pastes a whole report with `JSON.stringify(x)`: fields such as `x.summary` or `x.musts` are allowed.
+   - the `FRAMES:` block when a prompt mentions captures, and the word "reuse" in review, judge and verify prompts;
+   - no full suite in any prompt without `--allow-full-suite`;
+   - no whole report pasted with `JSON.stringify(x)` of the whole object without `--allow-inline-report`: fields such as `x.summary` or `x.musts` are allowed.
 2. Launch with `Workflow({ scriptPath })`.
 
 **Naming and lint traps:**
 
-- **Labels name the role, the piece and the effort:** `build:header · high`, `test:header-checks · low`, `review:header-judge · medium`. The role is one of `build`, `test`, `review`, `judge`, `verify` or `fix`, so the run log shows who does what and at what effort.
+- **Labels name the role, the piece and the effort:** `build:header · high`, `test:header-checks · low`, `review:header-judge · medium`. The role is one of `build`, `read`, `test`, `review`, `judge`, `verify` or `fix`, with `read` for the Sonnet readers of a research fan-out, so the run log shows who does what and at what effort.
 - **Labels must be fixed text.** A `` `review:${x}` `` inside a `.map()` fails, so unroll the calls.
 - **The block is literally called `FRAMES:`.**
 - **A phrase such as "no full suites" triggers the full-suite rule:** write "targeted checks only".
@@ -190,7 +196,7 @@ Keep a table of your own measured runs (agents, minutes, tokens) to estimate the
    - **Hypotheses:** a likely cause that could not be reproduced is presented as a hypothesis, and corrected in the chat if the fix shows another cause.
    - **What an agent did not open does not count as zero.** If it did not read a file (because of the secrets rule, its size or permissions), it reports it as "not verified", not as "0". The main session checks it with masked values.
    - **Page and data are published together.** Before publishing, check that every source the page reads exists and that none is left unused. Then publish the new data, the deletions and the page in one atomic batch, so nobody sees a page that reads sources that do not exist yet.
-3. **"Done" only with evidence:** a capture in the same framing as the user's, the test that proves it or, for analysis, the sources behind each claim. "Planned", "in the next round" or "noted" is not "done".
+3. **"Done" only with evidence:** a capture in the same framing as the user's, the test that proves it or, for analysis, the sources behind each claim. If the user asked to copy something that exists, the evidence is a side-by-side comparison with the original. "Planned", "in the next round" or "noted" is not "done".
 4. **Pass on what matters,** briefly: first the answer in one or two sentences, then the detail that is needed.
 5. **Decisions are numbered and come with a recommendation, and they do not stop the work:** take the recommended one, note it and report it with its number so the user can change it. If there is a recommendation, do not ask "which one do you want?". Missing data is never inferred: it goes in as TBD or gets asked.
 6. **Report the real minutes and tokens against the estimate,** with the figures, as they are.
@@ -199,58 +205,14 @@ Keep a table of your own measured runs (agents, minutes, tokens) to estimate the
 ## Request tracking
 
 1. **One living request list.** Every message from the user goes into the project's list in the same turn, with their words, the ask and a status (to do, in progress, done, answered, not verified). Progress reports come from that list, never from memory.
-2. **No request without an owner.** If it arrives while a workflow is running, it is assigned to the step that will take it, or done directly if it is small.
+2. **No request without an owner.** If it arrives while a workflow is running, it is assigned to the step that will take it, or done directly if it is small. The agent that fixes rereads the request list before it finishes and applies anything new that is its own.
 3. **Short rounds,** of 45 to 60 minutes, with a delivery between one and the next. A longer round only with permission. A large job is split into deliveries.
 
 ---
 
 ## Template: the level-2 archetype
 
-A script for Claude Code's Workflow tool. Copy it, fill in every `…`, run the lint and show the phase table before launching.
-
-```js
-export const meta = {
-  name: 'short-name',
-  description: 'One line: what it does and what it ends with',
-  level: 2,                           // 0 to 3 (section 1): 0 is never a workflow; 1 is one agent, no review, up to 30 min
-  estimate: 35,                       // minutes; over 60 needs the user's permission: overrun: '…their words, with the date…'
-  tokens: 400000,                     // total estimate when planning; report the real figure at the end
-  phases: [
-    { title: 'Build', detail: 'Opus builds' },
-    { title: 'Test', detail: 'Haiku runs the checks and reports them' },
-    { title: 'Judge', detail: 'Opus reviews and judges in one; Sonnet fixes only a must; Opus rechecks only a risky must' },
-  ],
-}
-
-const AUTHORITY = `AUTHORITY / WHY: the user, <date and time>, verbatim: "…". Intent in three lines: the piece, who it is for, what it has to achieve. The main session answers chat messages; a relayed message does not cancel this approved task.`
-const RULES = `RULES: never invent data (TBD). Edit only …. Never touch other projects, vendor/, .env or secret files. Builds and browser runs take the shared lock: …. Targeted checks only. Write files under ….`
-const WORK = { type: 'object', properties: { summary: { type: 'string' }, report: { type: 'string' }, changed: { type: 'array', items: { type: 'string' } }, evidence: { type: 'array', items: { type: 'string' } }, open: { type: 'array', items: { type: 'string' } } }, required: ['summary', 'report', 'changed', 'evidence', 'open'] }
-const CHECKS = { type: 'object', properties: { summary: { type: 'string' }, report: { type: 'string' }, passed: { type: 'array', items: { type: 'string' } }, failed: { type: 'array', items: { type: 'string' } } }, required: ['summary', 'report', 'passed', 'failed'] }
-const VERDICT = { type: 'object', properties: { musts: { type: 'array', items: { type: 'object', properties: { finding: { type: 'string' }, risky: { type: 'boolean' }, evidence: { type: 'string' }, action: { type: 'string' } }, required: ['finding', 'risky', 'evidence', 'action'] } }, notes: { type: 'array', items: { type: 'string' } }, verdict: { type: 'string', enum: ['done', 'partly done', 'not done'] } }, required: ['musts', 'notes', 'verdict'] }
-
-phase('Build')
-const build = await agent(`${AUTHORITY}\n\n${RULES}\n\nTASK (build:piece): …. For analysis, give each claim its source. Write your notes to a file and give its path in "report". List in "open" what the test step must check.`,
-  { label: 'build:piece · high', phase: 'Build', model: 'opus', effort: 'high', schema: WORK })
-
-phase('Test')
-const test = await agent(`${AUTHORITY}\n\n${RULES}\n\nBUILD: ${build.summary}\nCHECK: ${build.open.join(' | ')}\n\nTASK (test:piece-checks): run the targeted checks once and report each as passed or failed with its output; do not fix anything. Write the output to a file and give its path in "report".`,
-  { label: 'test:piece-checks · low', phase: 'Test', model: 'haiku', effort: 'low', schema: CHECKS })
-
-phase('Judge')
-const judge = await agent(`${AUTHORITY}\n\n${RULES}\n\nBUILD: ${build.summary}\nNOTES: ${build.report}\nCHECKS: failed: ${test.failed.join(' | ')}; output in ${test.report} (read it; do not rerun)\n\nTASK (review:piece-judge, review and judge in one): try to refute "done"; list only real musts, each marked risky or not; do not edit files; update the request row.`,
-  { label: 'review:piece-judge · medium', phase: 'Judge', model: 'opus', effort: 'medium', schema: VERDICT })
-
-let fix = null, recheck = null
-if (judge && judge.musts.length) {
-  fix = await agent(`${AUTHORITY}\n\n${RULES}\n\nMUSTS: ${JSON.stringify(judge.musts)}\n\nTASK (fix:piece-musts): fix each must; leave its own check result as evidence.`,
-    { label: 'fix:piece-musts · medium', phase: 'Judge', model: 'sonnet', effort: 'medium', schema: WORK })
-  if (judge.musts.some((m) => m.risky)) {
-    recheck = await agent(`${AUTHORITY}\n\n${RULES}\n\nMUSTS: ${JSON.stringify(judge.musts.filter((m) => m.risky))}\nFIX: ${fix.summary}\nNOTES: ${fix.report}\n\nTASK (judge:piece-recheck): reuse the fix's check results; check only the risky musts.`,
-      { label: 'judge:piece-recheck · medium', phase: 'Judge', model: 'opus', effort: 'medium', schema: VERDICT })
-  }
-}
-return { build, test, judge, fix, recheck }
-```
+The template is a script for Claude Code's Workflow tool, in its own file: [templates/level-2-archetype.js](templates/level-2-archetype.js). It has the steps of section 4: build, test, review and judge in one, and a fix and a short recheck only when the judge finds a must. Copy it, fill in every `…`, run the lint and show the phase table before launching.
 
 ---
 
@@ -275,5 +237,5 @@ Fill in this table in each project, and copy the tools rather than linking them.
 1. Copy this guide and `tools/workflow-lint.mjs` into your project, and fill in Appendix A.
 2. Create the living request list and log every message there.
 3. Before each task, decide the level (section 1) and whether an agent is needed at all.
-4. For a workflow, start from the template, pass the lint and show the phase table before launching.
+4. For a workflow, start from [templates/level-2-archetype.js](templates/level-2-archetype.js), pass the lint and show the phase table before launching.
 5. When it ends, verify what matters, report the real minutes and tokens, and update the list.

@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.4.0-2D72D2?labelColor=1A1D21" alt="Version 0.4.0">
+  <img src="https://img.shields.io/badge/version-0.5.0-2D72D2?labelColor=1A1D21" alt="Version 0.5.0">
   <img src="https://img.shields.io/badge/license-CC_BY_4.0-238551?labelColor=1A1D21" alt="CC BY 4.0 license">
   <img src="https://img.shields.io/badge/for-Claude_Code-8A8F98?labelColor=1A1D21" alt="For Claude Code">
 </p>
@@ -26,7 +26,7 @@
 
 A Claude Code session that can launch subagents and workflows tends to overbuild. Every change gets a judge, every fix gets another review, a fan-out inherits the session's model and runs everything on Opus, and nobody knows how long the run will take or how many tokens it will burn.
 
-This guide makes the main session size the work before it launches anything, and verify each change according to its risk. It is one Markdown file, [`RULES.md`](RULES.md), plus a lint that checks a workflow script before it launches.
+This guide makes the main session size the work before it launches anything, and verify each change according to its risk. It is one Markdown file, [`RULES.md`](RULES.md), plus a workflow template and a lint that checks a workflow script before it launches.
 
 **What it does differently:**
 
@@ -53,23 +53,23 @@ This guide makes the main session size the work before it launches anything, and
 | [9. Mechanical check and operation](RULES.md#9-mechanical-check-and-operation) | The lint, naming, and how to stop or change a running workflow |
 | [10. When it ends](RULES.md#10-when-it-ends) | Verify key claims, evidence, numbered decisions, real figures |
 | [Request tracking](RULES.md#request-tracking) | One living request list, an owner for every request, short rounds |
-| [Template](RULES.md#template-the-level-2-archetype) | The level-2 archetype as a workflow script |
+| [Template](templates/level-2-archetype.js) | The level-2 archetype, a workflow script ready to copy |
 
 ## Getting started
 
-1. **Copy `RULES.md` and `tools/workflow-lint.mjs` into your project.** Point Claude Code at the rules from your `CLAUDE.md`, for example with a line that reads `@RULES.md`.
+1. **Copy `RULES.md`, `tools/workflow-lint.mjs` and `templates/level-2-archetype.js` into your project.** Point Claude Code at the rules from your `CLAUDE.md`, for example with a line that reads `@RULES.md`.
 2. **Fill in [Appendix A](RULES.md#appendix-a-your-projects-specifics)** with your project's request list, build lock, test suite and dev server.
-3. **For each workflow,** start from the [template](RULES.md#template-the-level-2-archetype), run the lint, and show the phase table before launching.
+3. **For each workflow,** start from [`templates/level-2-archetype.js`](templates/level-2-archetype.js), fill in every `…`, run the lint, and show the phase table before launching.
 
 ## The lint
 
 `tools/workflow-lint.mjs` checks a workflow script before it launches, and runs with `bun` or `node`:
 
 ```bash
-bun tools/workflow-lint.mjs path/to/workflow.js
+bun tools/workflow-lint.mjs templates/level-2-archetype.js
 ```
 
-It fails when an agent has no explicit model or effort, a label is not `role:item · effort`, the AUTHORITY block is missing, `meta.level`, `meta.estimate` or `meta.tokens` is missing, a part runs over 60 minutes without the user's permission in `meta.overrun`, a prompt asks for captures without `FRAMES:`, or a prompt pastes a whole report. Three flags allow the exceptions the rules allow: `--allow-fable`, `--allow-full-suite` and `--allow-inline-report`.
+It fails when the script has no agent call, `meta.description`, `meta.level`, `meta.estimate` or `meta.tokens` is missing, a level does not fit its limits (level 1 is one agent with no review, and levels 2 and 3 need a review, judge or verify step, except part A of a split run, which declares `part: 'A'` in `meta`), an agent has no explicit model or effort, a label is not `role:item · effort` with a role from the list in section 9, a prompt has no AUTHORITY block, a part runs over 60 minutes without the user's dated permission in `meta.overrun`, a prompt mentions captures without `FRAMES:`, a prompt asks for the full suite, or a prompt pastes a whole report. Three flags allow the exceptions the rules allow: `--allow-fable`, `--allow-full-suite` and `--allow-inline-report`.
 
 ## License
 

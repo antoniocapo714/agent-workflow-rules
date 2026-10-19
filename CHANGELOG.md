@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.0 · 2026-10-19
+
+- The template is its own file, `templates/level-2-archetype.js`. RULES.md and the README link to it, and the README runs the lint on it.
+- If the user says they will review the work, the test and judge steps are dropped too: the build checks itself and the run becomes level 1.
+- If the checks are a single command, the main session runs it and there is no test agent. In a workflow, part A ends after the build and part B runs the review and judge. Part A declares `part: 'A'` in `meta` and the lint accepts it with no review, judge or verify step; part B and every other level-2 or level-3 workflow still need one.
+- Data residency gets two independent Opus judges, like prices, limits, security and compliance. If a fix adds claims, only those are verified, until no new ones appear.
+- At most two audit rounds, and the second only if the first found a must. The agent that fixes rereads the request list before it finishes. A request to copy something is closed with a side-by-side comparison with the original.
+- The lint: levels 2 and 3 need a review, judge or verify step; the AUTHORITY block is checked in every agent's prompt; the role must be one of build, read, test, review, judge, verify or fix; `meta.overrun` needs a date (YYYY-MM-DD); and the full-suite rule applies to every role.
+- The lint also fails a script with no agent call, and section 9 lists it.
+- Section 9 lists exactly what the lint checks, and the roles include `read` for the readers of a research fan-out.
+
 ## 0.4.0 · 2026-10-19
 
 - The guide is now specific to Claude Code: Haiku, Sonnet and Opus by name, the Workflow tool, `resumeFromRunId`, `journal.jsonl` and `TaskStop`.
