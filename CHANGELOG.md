@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1 · 2026-10-20
+
+- `SETUP.md`, step 7: the check for a leftover import line is now `! grep -n '^@docs/agent-workflow-rules.md' "CLAUDE.md"`. The old line exited with status 1 when there was no import line, which is the passing case, and stopped a chained run on a correct install. It now prints nothing and exits 0 when there is no import line.
+
 ## 0.7.0 · 2026-10-20
 
 Fewer tokens per call and fewer agents per run:

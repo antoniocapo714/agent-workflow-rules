@@ -133,7 +133,7 @@ cmp "<clone>/RULES.md" "docs/agent-workflow-rules.md"
 cmp "<clone>/tools/workflow-lint.mjs" "tools/workflow-lint.mjs"
 cmp "<clone>/templates/level-2-archetype.js" "tools/workflow-templates/level-2-archetype.js"
 grep -n 'read `docs/agent-workflow-rules.md`' "CLAUDE.md" && test -f "docs/agent-workflow-rules.md"
-grep -n '^@docs/agent-workflow-rules.md' "CLAUDE.md"
+! grep -n '^@docs/agent-workflow-rules.md' "CLAUDE.md"
 git status --short
 ```
 
@@ -142,7 +142,7 @@ What a pass prints:
 - **The lint:** a line that starts with `workflow-lint: ok`. If `tools/workflow-lint.mjs` was kept different in step 3, that line proves nothing about this version of the rules: report it as run with the project's older lint, not as a pass. If `node` is missing, use `bun`. If neither is installed, the lint is "not verified": say so in the report.
 - **Each `cmp`:** nothing. For a file kept different in step 3, `cmp` prints where it differs: report that instead.
 - **The first `grep`:** the line that tells the main session to read the rules, with its number; `test -f` prints nothing.
-- **The second `grep`:** nothing, because there is no import line. If it prints one, report it: the rules load into every agent.
+- **The second `grep`:** it prints nothing and exits 0 when there is no import line. If it prints a line and fails, there is an import line: report it, because the rules load into every agent.
 - If you left an existing section in step 4, report what both `grep` commands printed.
 - **`git status --short`:** the changes for the report. Outside a git repository, list the files you wrote.
 
