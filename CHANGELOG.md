@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.0 · 2026-10-20
+
+- The lint no longer warns about tokens per agent. It measured the estimate, not what happened, and one fixed number does not fit every setup. The review of the real tokens per agent in section 10 stays.
+- Section 7: measure your own fixed cost. It depends on the tools and servers connected, and much of it is cache reads, which cost less.
+- Section 10: only mechanical, short steps move to the main session (a script, a command, reading a diff). Work that reads a lot stays in an agent, because the main session runs the most expensive model and its context grows with what it reads.
+
 ## 0.8.0 · 2026-10-20
 
 - Section 7: every agent has a fixed cost, about 70 thousand tokens before it does anything, and `meta.tokens` counts it.

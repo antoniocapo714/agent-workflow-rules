@@ -17,8 +17,6 @@
 // - any prompt runs a full suite without --allow-full-suite;
 // - a prompt pastes a whole agent report with JSON.stringify(x) instead of the fields it needs (x.summary, x.musts) and the
 //   report's file path, unless --allow-inline-report.
-// It also warns, without failing, when meta.tokens per agent is under about 90 thousand: an agent costs about 70 thousand
-// before it does anything (RULES.md, section 7).
 // Prompts are checked with their `${NAME}` constants expanded; comments inside meta are ignored.
 // Usage: bun tools/workflow-lint.mjs <script.js> [--allow-fable] [--allow-full-suite] [--allow-inline-report]
 import { readFileSync } from "node:fs";
@@ -128,13 +126,6 @@ else if (level === 1) {
 }
 
 if (!/export const meta\s*=\s*\{[\s\S]*?description:/.test(src)) problems.push("meta has no description");
-
-// Warning only, never a failure (RULES.md, section 7): planned tokens per agent near an agent's fixed cost.
-const FIXED_COST = 70000;
-const planned = Number(/tokens:\s*([\d_]+)/.exec(meta)?.[1]?.replace(/_/g, ""));
-if (planned && calls.length && planned / calls.length < FIXED_COST * 1.3) {
-  console.error(`workflow-lint: warning: meta.tokens is about ${Math.round(planned / calls.length / 1000)} thousand per agent, near the fixed cost of about ${FIXED_COST / 1000} thousand: do the small steps in the main session or join them`);
-}
 
 if (problems.length) {
   console.error(`workflow-lint: ${problems.length} problem(s) in ${path}`);

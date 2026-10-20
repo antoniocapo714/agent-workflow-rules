@@ -140,7 +140,7 @@ This rule wins over any session mode that says cost does not matter.
 7. **Mechanical work goes in a script, not an agent.** Resolving hundreds of `file:line` references, counting or cross-checking tables is done with a script, in the test step or in the main session. An agent that does it one item at a time multiplies the cost.
 8. **Few commands per agent.** Every model call resends the agent's whole context, so read several files or line ranges in one command, not many small reads. Say so in the RULES block.
 9. **Keep `CLAUDE.md` lean.** It rides in every call of every agent. Rules that only some steps need go in files those steps read, and the main session reads these rules there instead of importing them with `@`.
-10. **Every agent has a fixed cost.** Before it does anything, an agent spends tens of thousands of tokens on its system prompt and tools: about 70 thousand in a run of three to five calls, as measured. Count it in `meta.tokens`, and give a step to an agent only when its work is clearly worth more than that.
+10. **Every agent has a fixed cost.** Before it does anything, an agent spends tens of thousands of tokens on its system prompt and tools. Measure your own: it depends on the tools and servers connected, whose definitions travel in every call. As a reference, one setup measured about 70 thousand in a run of three to five calls, much of it cache reads, which cost less. Count it in `meta.tokens`, and give a step to an agent only when its work is clearly worth more than that.
 
 Keep a table of your own measured runs (agents, minutes, tokens) to estimate the next one from.
 
@@ -175,7 +175,6 @@ Keep a table of your own measured runs (agents, minutes, tokens) to estimate the
    - the `FRAMES:` block when a prompt mentions captures, and the word "reuse" in review, judge and verify prompts;
    - no full suite in any prompt without `--allow-full-suite`;
    - no whole report pasted with `JSON.stringify(x)` of the whole object without `--allow-inline-report`: fields such as `x.summary` or `x.musts` are allowed.
-   - it also warns, without failing, when `meta.tokens` divided by the number of agents is under about 90 thousand: those agents would do little more than their fixed cost (section 7).
 2. Launch with `Workflow({ scriptPath })`.
 
 **Naming and lint traps:**
@@ -206,7 +205,7 @@ Keep a table of your own measured runs (agents, minutes, tokens) to estimate the
 3. **"Done" only with evidence:** a capture in the same framing as the user's, the test that proves it or, for analysis, the sources behind each claim. If the user asked to copy something that exists, the evidence is a side-by-side comparison with the original. "Planned", "in the next round" or "noted" is not "done".
 4. **Pass on what matters,** briefly: first the answer in one or two sentences, then the detail that is needed.
 5. **Decisions are numbered and come with a recommendation, and they do not stop the work:** take the recommended one, note it and report it with its number so the user can change it. If there is a recommendation, do not ask "which one do you want?". Missing data is never inferred: it goes in as TBD or gets asked.
-6. **Report the real minutes and tokens against the estimate,** with the figures, as they are: the total and the tokens per model (Haiku, Sonnet, Opus). Report the tokens per agent too: an agent that spent under about 90 thousand did little more than its fixed cost, so note that the main session could have done that step, or that it could join another, and apply it next time.
+6. **Report the real minutes and tokens against the estimate,** with the figures, as they are: the total and the tokens per model (Haiku, Sonnet, Opus). Report the tokens per agent too: an agent that spent under about 1.3 times the fixed cost (about 90 thousand in that setup) did little more than that cost. Note that the step could join another or, if it was mechanical and short (a script, a command, reading a diff), that the main session could have done it, and apply it next time. Work that reads a lot stays in an agent even near the floor: the main session runs the most expensive model, and its context grows with everything it reads.
 7. **Update the living request list** with each request's status and evidence.
 
 ## Request tracking
