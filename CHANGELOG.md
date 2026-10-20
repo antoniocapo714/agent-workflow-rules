@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 · 2026-10-20
+
+Fewer tokens per call and fewer agents per run:
+
+- `CLAUDE.md` no longer imports the rules with `@docs/agent-workflow-rules.md`. Its section tells the main session to read `docs/agent-workflow-rules.md` before launching agents or a workflow, lists the seven checks and holds the project block. An import loads the rules into every call of every agent, and only the main session needs them. `SETUP.md` and the README's getting started follow; the verify step checks the read line and that there is no import, and Updating asks before replacing an older import line.
+- Section 4: one judge per run, covering all its pieces unless they are large and independent. The short review after a fix is no longer an agent: the main session reads the fix's diff and check result, and launches a short Opus review only if those cannot settle a risky must. The template drops its recheck agent.
+- Section 7: few commands per agent, because every model call resends the agent's whole context; and a lean `CLAUDE.md`, because it rides in every call of every agent.
+- Sections 7 and 10: report the real tokens per model (Haiku, Sonnet, Opus) as well as the total.
+
 ## 0.6.2 · 2026-10-20
 
 - The README has a diagram of the flow from a request to done: the seven checks, the four levels with the model for each step, and what happens at the end. Its source is `docs/flow.html`.

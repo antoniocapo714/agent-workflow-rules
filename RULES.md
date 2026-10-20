@@ -41,7 +41,7 @@ The guide comes with `tools/workflow-lint.mjs`, which checks a workflow script b
 | Change to text, a label or a value | 0 | Direct. Targeted test or capture |
 | Sketch, wireframe, board, mockup | 1 | Direct, in minutes, with the real labels. Capture to the user |
 | Small visual tweak in the interface | 1 | Direct or one agent. Capture in the user's framing |
-| Interface change with new behavior | 2 | Archetype. Two reviews in parallel (visual and code) only if code and view both change |
+| Interface change with new behavior | 2 | Archetype. One judge checks both the view and the code |
 | Change to data, a data model or core logic | 2 | Archetype, with the build on Opus at high |
 | Research or code analysis | 2 | Sonnet readers in parallel, Opus synthesis and an Opus critic that tries to refute it |
 | Analysis, plan or recommendation a decision rests on | 2 | Archetype. The build gives each claim its source; the judge checks claims, reasoning and gaps against the ask |
@@ -80,13 +80,15 @@ The guide comes with `tools/workflow-lint.mjs`, which checks a workflow script b
                       sets the status in the request list
 4. fix                Sonnet at medium, only if there is a must
                       fixes and leaves its own evidence
-5. short review       Opus at medium, only if the must was risky
-                      reviews only those musts
+5. main session       after a fix, reads the fix's diff and its check result;
+                      launches a short Opus review at medium only if
+                      those cannot settle a risky must
 6. main session       opens the main evidence (a capture, a test result or the key sources),
                       confirms what changed and tells the user what matters
 ```
 
-- A minor must is closed with the fix's own evidence, without another agent.
+- **One judge per run.** One judge covers all the pieces of a run, unless they are large and independent.
+- **The short review is not an agent.** After a fix, the main session reads the fix's diff and check result. It launches a short Opus review only if those cannot settle a risky must. A minor must is closed with the fix's own evidence, without another agent.
 - At most two audit rounds, and the second only if the first found a must. Whatever is still open goes to the user.
 - **If the checks are a single command (a script), the main session runs it and there is no test agent.** An agent spends tens of thousands of tokens before its first command: a test agent that ran one command used 71 thousand. In a workflow, part A ends after the build and declares `part: 'A'` in `meta`, so the lint accepts it with no review, judge or verify step; the main session runs the command, and part B, a second workflow, runs the review and judge and keeps its judge (section 9: a workflow that depends on another).
 - **If the user says they will review it, drop the test and judge steps:** the build checks its own work against the ask, and the run becomes level 1 (one agent, 30 minutes at most). If the workflow is already running, stop it right after the build (section 9).
@@ -118,7 +120,8 @@ Each script defines a few shared blocks and pastes them into every `agent()` cal
    - never touch other projects, dependencies copied into the repo (`vendor/`) or files with secrets;
    - which files it may edit;
    - the shared lock for builds and browser runs;
-   - targeted checks only.
+   - targeted checks only;
+   - read with few commands (section 7).
 4. **TASK:** what this agent does and what it ends with.
 5. **schema:** always structured output: summary, the path to its notes, changes, checks, evidence, open items.
 
@@ -132,9 +135,11 @@ This rule wins over any session mode that says cost does not matter.
 2. **Images to measure:** crops of the area that matters, reduced scale when it is enough, one contact sheet instead of loose captures, and captures reused.
 3. **Read in parts:** search with `grep` and read ranges. In the main session, trim outputs with `tail` or `cut`.
 4. **Effort is set per step** (section 3).
-5. **Estimate and report tokens like time:** `meta.tokens` when planning the workflow, and the real figure at the end, next to the minutes.
-6. **What already saves:** verify by risk, review and judge in one, checks run once in the test step, and `resumeFromRunId` instead of running again.
+5. **Estimate and report tokens like time:** `meta.tokens` when planning the workflow, and the real figures at the end, next to the minutes: the total and the tokens per model (Haiku, Sonnet, Opus), because their price per token differs a lot.
+6. **What already saves:** verify by risk, review and judge in one, one judge per run, checks run once in the test step, and `resumeFromRunId` instead of running again.
 7. **Mechanical work goes in a script, not an agent.** Resolving hundreds of `file:line` references, counting or cross-checking tables is done with a script, in the test step or in the main session. An agent that does it one item at a time multiplies the cost.
+8. **Few commands per agent.** Every model call resends the agent's whole context, so read several files or line ranges in one command, not many small reads. Say so in the RULES block.
+9. **Keep `CLAUDE.md` lean.** It rides in every call of every agent. Rules that only some steps need go in files those steps read, and the main session reads these rules there instead of importing them with `@`.
 
 Keep a table of your own measured runs (agents, minutes, tokens) to estimate the next one from.
 
@@ -199,7 +204,7 @@ Keep a table of your own measured runs (agents, minutes, tokens) to estimate the
 3. **"Done" only with evidence:** a capture in the same framing as the user's, the test that proves it or, for analysis, the sources behind each claim. If the user asked to copy something that exists, the evidence is a side-by-side comparison with the original. "Planned", "in the next round" or "noted" is not "done".
 4. **Pass on what matters,** briefly: first the answer in one or two sentences, then the detail that is needed.
 5. **Decisions are numbered and come with a recommendation, and they do not stop the work:** take the recommended one, note it and report it with its number so the user can change it. If there is a recommendation, do not ask "which one do you want?". Missing data is never inferred: it goes in as TBD or gets asked.
-6. **Report the real minutes and tokens against the estimate,** with the figures, as they are.
+6. **Report the real minutes and tokens against the estimate,** with the figures, as they are: the total and the tokens per model (Haiku, Sonnet, Opus).
 7. **Update the living request list** with each request's status and evidence.
 
 ## Request tracking
@@ -212,7 +217,7 @@ Keep a table of your own measured runs (agents, minutes, tokens) to estimate the
 
 ## Template: the level-2 archetype
 
-The template is a script for Claude Code's Workflow tool, in its own file: [templates/level-2-archetype.js](templates/level-2-archetype.js). It has the steps of section 4: build, test, review and judge in one, and a fix and a short recheck only when the judge finds a must. Copy it, fill in every `…`, run the lint and show the phase table before launching.
+The template is a script for Claude Code's Workflow tool, in its own file: [templates/level-2-archetype.js](templates/level-2-archetype.js). It has the steps of section 4: build, test, review and judge in one, and a fix only when the judge finds a must. After a fix, the main session reads the fix's diff and check result instead of launching a recheck agent. Copy it, fill in every `…`, run the lint and show the phase table before launching.
 
 ---
 
@@ -234,8 +239,8 @@ Fill in this table in each project, and copy the tools rather than linking them.
 
 ## Getting started
 
-1. Copy this guide and `tools/workflow-lint.mjs` into your project, and fill in Appendix A.
+1. Copy this guide and `tools/workflow-lint.mjs` into your project, and fill in Appendix A. In `CLAUDE.md`, tell the main session to read the guide before launching agents; do not import it with `@`.
 2. Create the living request list and log every message there.
 3. Before each task, decide the level (section 1) and whether an agent is needed at all.
 4. For a workflow, start from [templates/level-2-archetype.js](templates/level-2-archetype.js), pass the lint and show the phase table before launching.
-5. When it ends, verify what matters, report the real minutes and tokens, and update the list.
+5. When it ends, verify what matters, report the real minutes and tokens (the total and per model), and update the list.

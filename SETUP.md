@@ -4,7 +4,7 @@ This file is for a Claude Code agent. The user asks for the install with one lin
 
 > Install the agent workflow rules from https://github.com/creative-context/agent-workflow-rules in this project. Follow its SETUP.md.
 
-Follow the steps in order. When you finish, the project has a copy of the rules, the lint and the template, a `CLAUDE.md` that imports the rules and holds the project's own values, and a request list.
+Follow the steps in order. When you finish, the project has a copy of the rules, the lint and the template, a `CLAUDE.md` that points the main session to the rules and holds the project's own values, and a request list.
 
 ## 1. Ground rules
 
@@ -59,9 +59,11 @@ The heading is `##` when the file is new, has no sections or has only a `#` titl
 ```markdown
 ## Agents and workflows
 
-@docs/agent-workflow-rules.md
+Before launching agents or a workflow, the main session must read `docs/agent-workflow-rules.md`, a copy of agent-workflow-rules <version>, kept unchanged.
 
-The rules above are a copy of agent-workflow-rules <version>, kept unchanged. This is their Appendix A for this project.
+Seven checks before any launch: is it needed and at which level; intent in three lines; explicit model and effort on every agent, with the phase table; AUTHORITY, verbatim and dated; minimum FRAMES; an estimate in minutes and tokens, with permission past 60 minutes; the lint passes.
+
+This is Appendix A of the rules for this project.
 
 | What | In this project | Where it came from |
 |---|---|---|
@@ -76,7 +78,7 @@ The rules above are a copy of agent-workflow-rules <version>, kept unchanged. Th
 | Verification workflow for deliverables to others | … | … |
 ```
 
-- The `@docs/agent-workflow-rules.md` line is plain text on its own line. Inside backticks or a code block, Claude Code does not import it.
+- Do not import the rules with an `@docs/agent-workflow-rules.md` line. An import loads the rules into every call of every agent, and only the main session needs them: the agents get what they need in their prompts.
 - Replace `<version>` with the version from step 2.
 - If a file stayed different in step 3, add to the first row's last cell which file it is, for example "Copied by the setup; `tools/workflow-lint.mjs` kept different at the user's choice". The update in the Updating section reads this.
 
@@ -130,7 +132,8 @@ node "tools/workflow-lint.mjs" "tools/workflow-templates/level-2-archetype.js"
 cmp "<clone>/RULES.md" "docs/agent-workflow-rules.md"
 cmp "<clone>/tools/workflow-lint.mjs" "tools/workflow-lint.mjs"
 cmp "<clone>/templates/level-2-archetype.js" "tools/workflow-templates/level-2-archetype.js"
-grep -n '^@docs/agent-workflow-rules.md$' "CLAUDE.md" && test -f "docs/agent-workflow-rules.md"
+grep -n 'read `docs/agent-workflow-rules.md`' "CLAUDE.md" && test -f "docs/agent-workflow-rules.md"
+grep -n '^@docs/agent-workflow-rules.md' "CLAUDE.md"
 git status --short
 ```
 
@@ -138,7 +141,9 @@ What a pass prints:
 
 - **The lint:** a line that starts with `workflow-lint: ok`. If `tools/workflow-lint.mjs` was kept different in step 3, that line proves nothing about this version of the rules: report it as run with the project's older lint, not as a pass. If `node` is missing, use `bun`. If neither is installed, the lint is "not verified": say so in the report.
 - **Each `cmp`:** nothing. For a file kept different in step 3, `cmp` prints where it differs: report that instead.
-- **The `grep`:** the import line with its number, for example `7:@docs/agent-workflow-rules.md`; `test -f` prints nothing. If you left an existing section in step 4, report what they printed.
+- **The first `grep`:** the line that tells the main session to read the rules, with its number; `test -f` prints nothing.
+- **The second `grep`:** nothing, because there is no import line. If it prints one, report it: the rules load into every agent.
+- If you left an existing section in step 4, report what both `grep` commands printed.
 - **`git status --short`:** the changes for the report. Outside a git repository, list the files you wrote.
 
 Then, if you cloned, delete the temporary folder: `rm -rf "<tmp>"`. Never delete a local copy the user gave.
@@ -163,7 +168,7 @@ Keep it short:
    - the file differs in a way the `CHANGELOG.md` does not explain (the user may have edited it).
 
    Then copy the files that were approved, to the same paths. Safe choice: keep the project's file. Report each file you left as it was.
-3. Keep the project block in `CLAUDE.md`. Change only the version in it, and any row a changelog entry asks for.
+3. Keep the project block in `CLAUDE.md`. Change only the version in it, and any row a changelog entry asks for. Before 0.7.0 the block imported the rules with an `@docs/agent-workflow-rules.md` line: show it and ask whether to replace it with the read line and the checks line of step 4. Safe choice: leave it, and say in the report that the import loads the rules into every call of every agent.
 4. Run the checks in step 7 and report as in step 8.
 
 ## Removing
@@ -171,5 +176,5 @@ Keep it short:
 Every path here is under `<root>`, the folder where the setup installed (the project block in `CLAUDE.md` is in `"<root>/CLAUDE.md"`).
 
 1. Delete `"<root>/docs/agent-workflow-rules.md"`, `"<root>/tools/workflow-lint.mjs"` and `"<root>/tools/workflow-templates/level-2-archetype.js"`, and the folders the setup created if they are empty.
-2. Remove the "Agents and workflows" section from `"<root>/CLAUDE.md"`. If the setup created `CLAUDE.md` and nothing else is in it, ask before deleting the file.
+2. Remove the "Agents and workflows" section from `"<root>/CLAUDE.md"`, with its read line (or, before 0.7.0, its `@docs/agent-workflow-rules.md` line). If the setup created `CLAUDE.md` and nothing else is in it, ask before deleting the file.
 3. `"<root>/REQUESTS.md"` holds the user's history: ask before deleting it.
