@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.7.1-2D72D2?labelColor=1A1D21" alt="Version 0.7.1">
+  <img src="https://img.shields.io/badge/version-0.8.0-2D72D2?labelColor=1A1D21" alt="Version 0.8.0">
   <img src="https://img.shields.io/badge/license-CC_BY_4.0-238551?labelColor=1A1D21" alt="CC BY 4.0 license">
   <img src="https://img.shields.io/badge/for-Claude_Code-8A8F98?labelColor=1A1D21" alt="For Claude Code">
 </p>
@@ -91,7 +91,7 @@ To work on this repository itself, an agent reads [`AGENTS.md`](AGENTS.md), whic
 bun tools/workflow-lint.mjs templates/level-2-archetype.js
 ```
 
-It fails when the script has no agent call, `meta.description`, `meta.level`, `meta.estimate` or `meta.tokens` is missing, a level does not fit its limits (level 1 is one agent with no review, and levels 2 and 3 need a review, judge or verify step, except part A of a split run, which declares `part: 'A'` in `meta`), an agent has no explicit model or effort, a label is not `role:item · effort` with a role from the list in section 9, a prompt has no AUTHORITY block, a part runs over 60 minutes without the user's dated permission in `meta.overrun`, a prompt mentions captures without `FRAMES:`, a prompt asks for the full suite, or a prompt pastes a whole report. Three flags allow the exceptions the rules allow: `--allow-fable`, `--allow-full-suite` and `--allow-inline-report`.
+It fails when the script has no agent call, `meta.description`, `meta.level`, `meta.estimate` or `meta.tokens` is missing, a level does not fit its limits (level 1 is one agent with no review, and levels 2 and 3 need a review, judge or verify step, except part A of a split run, which declares `part: 'A'` in `meta`), an agent has no explicit model or effort, a label is not `role:item · effort` with a role from the list in section 9, a prompt has no AUTHORITY block, a part runs over 60 minutes without the user's dated permission in `meta.overrun`, a prompt mentions captures without `FRAMES:`, a prompt asks for the full suite, or a prompt pastes a whole report. Three flags allow the exceptions the rules allow: `--allow-fable`, `--allow-full-suite` and `--allow-inline-report`. It also warns, without failing, when the planned tokens per agent are under about 90 thousand, close to what an agent costs before it does anything.
 
 ## License
 

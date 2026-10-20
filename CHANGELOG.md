@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0 · 2026-10-20
+
+- Section 7: every agent has a fixed cost, about 70 thousand tokens before it does anything, and `meta.tokens` counts it.
+- Section 10: tokens are reported per agent too, and an agent under about 90 thousand marks a step the main session could have done or that could join another.
+- The lint warns, without failing, when the planned tokens per agent are under about 90 thousand.
+
 ## 0.7.1 · 2026-10-20
 
 - `SETUP.md`, step 7: the check for a leftover import line is now `! grep -n '^@docs/agent-workflow-rules.md' "CLAUDE.md"`. The old line exited with status 1 when there was no import line, which is the passing case, and stopped a chained run on a correct install. It now prints nothing and exits 0 when there is no import line.
