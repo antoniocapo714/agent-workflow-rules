@@ -17,6 +17,7 @@ A guide for launching agents and workflows in Claude Code: one Markdown file of 
 | `README.md` | The overview, the rules table, getting started and the lint |
 | `CHANGELOG.md` | One entry per version |
 | `docs/banner.html`, `docs/banner.png` | The README banner and its source |
+| `docs/flow.html`, `docs/flow.png` | The README diagram of the flow, from a request to done, and its source |
 | `AGENTS.md` | This file. `CLAUDE.md` imports it |
 | `LICENSE` | CC BY 4.0 |
 
@@ -34,6 +35,15 @@ The banner, rendered from its source at 3x with headless Chrome (the command is 
 chrome --headless=new --hide-scrollbars --force-device-scale-factor=3 --window-size=880,440 \
   --screenshot=docs/banner.png docs/banner.html
 ```
+
+The flow diagram, the same way (the command is also at the top of `docs/flow.html`; it draws its connectors with a script, so give it time to run):
+
+```bash
+chrome --headless=new --hide-scrollbars --force-device-scale-factor=3 --window-size=880,520 --virtual-time-budget=2000 \
+  --screenshot=docs/flow.png docs/flow.html
+```
+
+If a rule shown in the diagram changes (the seven checks, the four levels, the model for each step, what happens at the end), redraw the diagram in the same commit.
 
 ## Rules
 

@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.6.1-2D72D2?labelColor=1A1D21" alt="Version 0.6.1">
+  <img src="https://img.shields.io/badge/version-0.6.2-2D72D2?labelColor=1A1D21" alt="Version 0.6.2">
   <img src="https://img.shields.io/badge/license-CC_BY_4.0-238551?labelColor=1A1D21" alt="CC BY 4.0 license">
   <img src="https://img.shields.io/badge/for-Claude_Code-8A8F98?labelColor=1A1D21" alt="For Claude Code">
 </p>
@@ -38,6 +38,10 @@ This guide makes the main session size the work before it launches anything, and
 - **"Done" means evidence:** a capture, a test result or, for analysis, the sources behind each claim. Not "planned" or "noted".
 
 ## The rules
+
+<p align="center">
+  <img src="docs/flow.png" alt="From a request to done: the user's message goes through seven checks before launching, then one of four lanes by risk (trivial, visual, core, for others), with the model for each step, and ends with evidence, numbered decisions and real minutes and tokens" width="100%">
+</p>
 
 | Section | What it covers |
 |---|---|

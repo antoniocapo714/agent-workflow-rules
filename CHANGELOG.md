@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2 · 2026-10-20
+
+- The README has a diagram of the flow from a request to done: the seven checks, the four levels with the model for each step, and what happens at the end. Its source is `docs/flow.html`.
+
 ## 0.6.1 · 2026-10-19
 
 `SETUP.md` leaves less to guess and handles files the project already has:

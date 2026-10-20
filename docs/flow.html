@@ -1,0 +1,146 @@
+<!doctype html>
+<!-- README diagram: from a request to done. Drawn at the size GitHub shows it (880 wide) and captured at 3× with headless Chrome:
+     chrome --headless=new --hide-scrollbars --force-device-scale-factor=3 --window-size=880,520 --virtual-time-budget=2000 \
+       --screenshot=docs/flow.png docs/flow.html -->
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<title>From a request to done</title>
+<style>
+  :root {
+    --bg: #050506;
+    --panel: #0d0e10;
+    --line: #23262b;
+    --wire: #343941;
+    --chip: #17191d;
+    --ink: #f2f4f6;
+    --ink-2: #a3a9b1;
+    --ink-3: #7c838c;
+    --l0: #3a4250;
+    --l1: #2c4f86;
+    --l2: #2d72d2;
+    --l3: #6fa6e8;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 880px; height: 520px; overflow: hidden; }
+  body { background: var(--bg); color: var(--ink); font: 13px/1.4 Inter, system-ui, sans-serif; position: relative; padding: 26px 24px; }
+
+  header h2 { font-size: 18px; font-weight: 600; }
+  header p { margin-top: 2px; color: var(--ink-3); }
+
+  .grid { position: relative; margin-top: 20px; display: grid; grid-template-columns: 168px 1fr 178px; column-gap: 32px; align-items: center; }
+
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .card h3 { font-size: 13px; font-weight: 600; }
+  .card .num { color: var(--ink-3); font-weight: 500; }
+  .card ul { list-style: none; padding: 0; margin-top: 8px; display: grid; gap: 5px; }
+  .card li { color: var(--ink-2); padding-left: 12px; position: relative; }
+  .card li::before { content: ''; position: absolute; left: 0; top: 7px; width: 5px; height: 5px; border-radius: 3px; background: var(--ink-3); }
+
+  .start { display: grid; gap: 10px; }
+  .ask { justify-self: start; padding: 5px 10px; border-radius: 13px; border: 1px solid var(--line); background: var(--chip); font-weight: 500; }
+
+  .lanes { display: grid; gap: 10px; }
+  .lanes .label { color: var(--ink-3); font-size: 12px; letter-spacing: 0.02em; margin-bottom: -2px; }
+  .lane { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px 10px; }
+  .head { display: flex; align-items: baseline; gap: 8px; }
+  .level { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  .level i { width: 16px; height: 16px; border-radius: 8px; font: normal 600 11px/16px Inter, sans-serif; text-align: center; color: #fff; }
+  .what { color: var(--ink-3); font-size: 12px; }
+  .flow { margin-top: 7px; display: flex; align-items: center; gap: 5px; flex-wrap: nowrap; }
+  .step { height: 24px; display: inline-flex; align-items: center; gap: 5px; padding: 0 8px; border: 1px solid var(--line); border-radius: 6px; white-space: nowrap; }
+  .step b { font-weight: 500; font-size: 11.5px; color: var(--ink-3); }
+  .arrow { color: var(--ink-3); }
+  .note { margin-top: 6px; color: var(--ink-3); font-size: 11.5px; }
+
+  .guards { margin-top: 22px; display: flex; gap: 10px; justify-content: center; }
+  .guard { padding: 6px 12px; border-radius: 14px; background: var(--chip); border: 1px solid var(--line); color: var(--ink-2); }
+  .guard strong { color: var(--ink); font-weight: 600; }
+
+  svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  svg.wires path { fill: none; stroke: var(--wire); stroke-width: 1.5; }
+</style>
+</head>
+<body>
+  <header>
+    <h2>From a request to done</h2>
+    <p>RULES.md, sections 0, 1 and 10, with the model for each step</p>
+  </header>
+
+  <div class="grid" id="grid">
+    <svg class="wires" id="wires"></svg>
+
+    <div class="start">
+      <span class="ask">The user's message</span>
+      <div class="card" id="checks">
+        <h3><span class="num">0 ·</span> Before launching</h3>
+        <ul>
+          <li>Is an agent needed?</li>
+          <li>Intent in three lines</li>
+          <li>Model and effort</li>
+          <li>AUTHORITY block</li>
+          <li>FRAMES, if captures</li>
+          <li>Minutes and tokens</li>
+          <li>The lint passes</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lanes">
+      <div class="label">1 · VERIFY BY RISK</div>
+      <div class="lane" id="lane0">
+        <div class="head"><span class="level"><i style="background:var(--l0)">0</i>Trivial</span><span class="what">A word, a value, a label</span></div>
+        <div class="flow"><span class="step">Main session</span><span class="arrow">→</span><span class="step">One quick check</span></div>
+      </div>
+      <div class="lane" id="lane1">
+        <div class="head"><span class="level"><i style="background:var(--l1)">1</i>Visual</span><span class="what">A board, a sketch, a first draft</span></div>
+        <div class="flow"><span class="step">One agent</span><span class="arrow">→</span><span class="step">The user judges</span></div>
+      </div>
+      <div class="lane" id="lane2">
+        <div class="head"><span class="level"><i style="background:var(--l2)">2</i>Core</span><span class="what">Code, analyses, plans others build on</span></div>
+        <div class="flow"><span class="step">Build <b>opus</b></span><span class="arrow">→</span><span class="step">Test <b>haiku</b></span><span class="arrow">→</span><span class="step">Judge <b>opus</b></span><span class="arrow">→</span><span class="step">Fix <b>sonnet</b></span></div>
+        <div class="note">Fix only on a must. A one-command test runs in the main session.</div>
+      </div>
+      <div class="lane" id="lane3">
+        <div class="head"><span class="level"><i style="background:var(--l3);color:#0d0e10">3</i>For others</span><span class="what">Decks, data for other people</span></div>
+        <div class="flow"><span class="step">Outline approved</span><span class="arrow">→</span><span class="step">Critique <b>2 lenses</b></span><span class="arrow">→</span><span class="step">Verify by source</span></div>
+      </div>
+    </div>
+
+    <div class="card" id="done">
+      <h3><span class="num">10 ·</span> When it ends</h3>
+      <ul>
+        <li>Evidence shown</li>
+        <li>Key claims verified</li>
+        <li>Decisions numbered</li>
+        <li>Real minutes, tokens</li>
+        <li>Request list updated</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="guards">
+    <span class="guard"><strong>Over 60 minutes</strong> · ask first</span>
+    <span class="guard"><strong>Every agent</strong> names its model</span>
+    <span class="guard"><strong>Pass paths</strong>, not reports</span>
+  </div>
+
+<script>
+  // Wires from the checks card to each lane, and from each lane to the end card.
+  const grid = document.getElementById('grid').getBoundingClientRect();
+  const box = (id) => document.getElementById(id).getBoundingClientRect();
+  const svg = document.getElementById('wires');
+  const curve = (x1, y1, x2, y2) => { const m = (x1 + x2) / 2; return `M${x1},${y1} C${m},${y1} ${m},${y2} ${x2},${y2}`; };
+  const a = box('checks'), z = box('done');
+  const ax = a.right - grid.left, ay = a.top + a.height / 2 - grid.top;
+  const zx = z.left - grid.left, zy = z.top + z.height / 2 - grid.top;
+  let d = '';
+  for (const id of ['lane0', 'lane1', 'lane2', 'lane3']) {
+    const l = box(id);
+    const ly = l.top + l.height / 2 - grid.top;
+    d += curve(ax, ay, l.left - grid.left, ly) + ' ' + curve(l.right - grid.left, ly, zx, zy) + ' ';
+  }
+  svg.innerHTML = `<path d="${d}"/>`;
+</script>
+</body>
+</html>
