@@ -37,6 +37,10 @@ This guide makes the main session size the work before it launches anything, and
 - **The user's words travel with the task.** Every prompt carries the user's latest message, verbatim, so a relayed message never derails an approved task.
 - **"Done" means evidence:** a capture, a test result or, for analysis, the sources behind each claim. Not "planned" or "noted".
 
+**Requirements:** Claude Code with subagents; the workflow parts use its Workflow tool. The lint runs with `node` or `bun`.
+
+**Status:** 0.x. The rules still change often, and they have not yet been measured against working without them.
+
 ## The rules
 
 <p align="center">
