@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.10.0 · 2026-10-22
+
+Sizing by agents, a firmer judge, and a correction to how resuming works:
+
+- Section 0, check 2: the intent says when the work is done, with what is out of scope and the one end-to-end check that proves it. The request list keeps it with each request.
+- Section 0, check 6, and the lint: `meta.agents`, the most agents a run can launch. Past 25 agents or 1.5 million tokens, as past 60 minutes, the user's dated permission goes in `meta.overrun`. Claude Code shows a "Large workflow" warning at those two figures. Section 1 says how many agents a task needs and to try a large fan-out on a small slice first.
+- Section 2: many agents read, one writes.
+- Section 3: agents in one fan-out that do the same kind of work get the same model, effort, agent type and schema, so each one after the first reads the first one's cache.
+- Section 4 and the template: the judge gets the ask, the work and the evidence, not the build's account of it. It checks the ask first, then quality, and ends with `done`, `must-fix` or `not-verified`. The fix runs on `must-fix`.
+- Section 6: shared blocks go first in every prompt; AUTHORITY carries what an agent needs from the user, because a running agent cannot get their messages; TASK says when the agent stops; a returned summary is 1,000 to 2,000 tokens.
+- Section 7: a build or fix gets the plan and the decisions in full. `/workflows` and the end-of-run notice give the real tokens.
+- Section 9: resuming reruns the first changed or failed step and every step after it, not only the changed one. Dates in a script are written as text, because `Date.now()` throws, and `stallMs` gives a long, quiet step more time. The lint asks for `meta.override` with the reason and the date when an `--allow` flag is used.
+- Shorter: the 71-thousand example and the 60-minute limit are each stated once, and two summaries that repeated other rules are gone. `AGENTS.md` caps `RULES.md` at 28,000 bytes.
+- `SETUP.md`: the checks line in the project block names the done check, agents and the new limits. To update an installed copy, replace that line too.
+
 ## 0.9.0 · 2026-10-20
 
 - The lint no longer warns about tokens per agent. It measured the estimate, not what happened, and one fixed number does not fit every setup. The review of the real tokens per agent in section 10 stays.

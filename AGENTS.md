@@ -51,6 +51,7 @@ If a rule shown in the diagram changes (the seven checks, the four levels, the m
 - **The template always passes the lint.** Run the lint on it after any change to the template or the lint.
 - **The README rules table matches `RULES.md`.** Each row links to a heading in `RULES.md`, and its anchor must match that heading: lowercase, punctuation removed, spaces turned into hyphens (for example `#0-before-launching-seven-checks`). If a heading changes, change its row.
 - **The paths in `SETUP.md` match the repository layout.** If a file moves or is renamed, update `SETUP.md` in the same commit.
+- **`RULES.md` stays under 28,000 bytes** (`wc -c RULES.md`). A new rule shortens or replaces another before it pushes the file past that: the main session reads it whole before every launch.
 - **The version badge and the changelog move together.** A new version changes the badge in `README.md` (its text and its alt text) and adds an entry at the top of `CHANGELOG.md`.
 - **American English, short and plain.**
 - **No names of people, companies or projects** in the files.

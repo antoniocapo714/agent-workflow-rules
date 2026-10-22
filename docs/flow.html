@@ -30,7 +30,7 @@
 
   .grid { position: relative; margin-top: 20px; display: grid; grid-template-columns: 168px 1fr 178px; column-gap: 32px; align-items: center; }
 
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 11px 12px 13px; }
   .card h3 { font-size: 13px; font-weight: 600; }
   .card .num { color: var(--ink-3); font-weight: 500; }
   .card ul { list-style: none; padding: 0; margin-top: 8px; display: grid; gap: 5px; }
@@ -76,11 +76,11 @@
         <h3><span class="num">0 ·</span> Before launching</h3>
         <ul>
           <li>Is an agent needed?</li>
-          <li>Intent in three lines</li>
+          <li>Intent, done check</li>
           <li>Model and effort</li>
           <li>AUTHORITY block</li>
           <li>FRAMES, if captures</li>
-          <li>Minutes and tokens</li>
+          <li>Time, tokens, agents</li>
           <li>The lint passes</li>
         </ul>
       </div>
@@ -120,7 +120,7 @@
   </div>
 
   <div class="guards">
-    <span class="guard"><strong>Over 60 minutes</strong> · ask first</span>
+    <span class="guard"><strong>Past 60 min, 1.5M tokens, 25 agents</strong> · ask first</span>
     <span class="guard"><strong>Every agent</strong> names its model</span>
     <span class="guard"><strong>Pass paths</strong>, not reports</span>
   </div>

@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.9.0-2D72D2?labelColor=1A1D21" alt="Version 0.9.0">
+  <img src="https://img.shields.io/badge/version-0.10.0-2D72D2?labelColor=1A1D21" alt="Version 0.10.0">
   <img src="https://img.shields.io/badge/license-CC_BY_4.0-238551?labelColor=1A1D21" alt="CC BY 4.0 license">
   <img src="https://img.shields.io/badge/for-Claude_Code-8A8F98?labelColor=1A1D21" alt="For Claude Code">
 </p>
@@ -33,7 +33,7 @@ This guide makes the main session size the work before it launches anything, and
 - **Verification follows risk.** A trivial edit gets one quick check. A visual change or a first draft goes to the user, who judges it. Only work that other work builds on gets a judge, whether it is code, an analysis or a plan, and only work for other people gets verification by source.
 - **Each step gets the model it needs.** Haiku runs the mechanical checks, Sonnet reads and fixes, and Opus builds and judges. Nothing inherits the session's model by accident.
 - **Review and judge are one step.** One Opus agent per run reads the test results and the evidence and tries to prove the work is not done. A fix runs only if it finds a must, and the main session checks the fix from its diff and check result.
-- **Every run has a size.** Each workflow declares its level, minutes and tokens, and a part over 60 minutes needs the user's permission before it launches.
+- **Every run has a size.** Each workflow declares its level, minutes, tokens and agents, and a part over 60 minutes, 1.5 million tokens or 25 agents needs the user's permission before it launches.
 - **The user's words travel with the task.** Every prompt carries the user's latest message, verbatim, so a relayed message never derails an approved task.
 - **"Done" means evidence:** a capture, a test result or, for analysis, the sources behind each claim. Not "planned" or "noted".
 
@@ -91,7 +91,7 @@ To work on this repository itself, an agent reads [`AGENTS.md`](AGENTS.md), whic
 bun tools/workflow-lint.mjs templates/level-2-archetype.js
 ```
 
-It fails when the script has no agent call, `meta.description`, `meta.level`, `meta.estimate` or `meta.tokens` is missing, a level does not fit its limits (level 1 is one agent with no review, and levels 2 and 3 need a review, judge or verify step, except part A of a split run, which declares `part: 'A'` in `meta`), an agent has no explicit model or effort, a label is not `role:item · effort` with a role from the list in section 9, a prompt has no AUTHORITY block, a part runs over 60 minutes without the user's dated permission in `meta.overrun`, a prompt mentions captures without `FRAMES:`, a prompt asks for the full suite, or a prompt pastes a whole report. Three flags allow the exceptions the rules allow: `--allow-fable`, `--allow-full-suite` and `--allow-inline-report`.
+It fails when the script has no agent call, `meta.description`, `meta.level`, `meta.estimate`, `meta.tokens` or `meta.agents` is missing, `meta.agents` is fewer than the agent calls, a level does not fit its limits (level 1 is one agent with no review, and levels 2 and 3 need a review, judge or verify step, except part A of a split run, which declares `part: 'A'` in `meta`), an agent has no explicit model or effort, a label is not `role:item · effort` with a role from the list in section 9, a prompt has no AUTHORITY block, a part runs over 60 minutes, 1.5 million tokens or 25 agents without the user's dated permission in `meta.overrun`, a prompt mentions captures without `FRAMES:`, a prompt asks for the full suite, or a prompt pastes a whole report. Three flags allow the exceptions the rules allow: `--allow-fable`, `--allow-full-suite` and `--allow-inline-report`. Each one needs `meta.override` with the reason and the date.
 
 ## License
 

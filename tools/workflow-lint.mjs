@@ -10,8 +10,12 @@
 // - a label is not `role:item · effort`, its role is not one of build, read, test, review, judge, verify, fix, or its effort
 //   differs from the call's effort option;
 // - an agent's prompt has no AUTHORITY block quoting the user's latest message;
-// - meta has no `estimate` in minutes, or it is over 60 without `overrun` recording the user's permission and its date (YYYY-MM-DD);
-// - (token use) meta has no `tokens` estimate (the run's total, as planned);
+// - meta has no `estimate` in minutes, no `tokens` estimate (the run's total, as planned), or no `agents` (the most agents the
+//   run can launch, conditional ones included), or `agents` is fewer than the script's agent() calls;
+// - the plan is over 60 minutes, 1.5 million tokens or 25 agents without `overrun` recording the user's permission and its
+//   date (YYYY-MM-DD);
+// - an --allow flag is used without `override` in meta recording the reason and the date (YYYY-MM-DD), with the user's words
+//   if they asked for it;
 // - a prompt that mentions captures has no `FRAMES:` list; a review, judge or verify prompt that mentions captures does
 //   not say to reuse them;
 // - any prompt runs a full suite without --allow-full-suite;
@@ -105,10 +109,24 @@ calls.forEach((call, n) => {
 const meta = (/export const meta\s*=\s*\{([\s\S]*?)\n\}/.exec(src)?.[1] ?? "").replace(/\s\/\/ .*$/gm, "");
 const estimate = Number(/estimate:\s*(\d+)/.exec(meta)?.[1]);
 if (!estimate) problems.push("meta has no estimate (minutes)");
-if (!Number(/tokens:\s*([\d_]+)/.exec(meta)?.[1]?.replace(/_/g, ""))) problems.push("meta has no tokens estimate (the run's total, as planned; report the real figure after it ends)");
-const overrun = /overrun:\s*(['"`])((?:\\[\s\S]|(?!\1)[\s\S])*)\1/.exec(meta)?.[2];
-if (estimate > 60 && !/\S/.test(overrun ?? "")) problems.push(`meta estimate ${estimate} min is over 60: ask the user for permission first and record it in meta.overrun (their words and the date)`);
-else if (estimate > 60 && !/\b\d{4}-\d{2}-\d{2}\b/.test(overrun)) problems.push("meta.overrun has no date: quote the user's permission with the date (YYYY-MM-DD)");
+const tokens = Number(/tokens:\s*([\d_]+)/.exec(meta)?.[1]?.replace(/_/g, ""));
+if (!tokens) problems.push("meta has no tokens estimate (the run's total, as planned; report the real figure after it ends)");
+const agents = Number(/agents:\s*(\d+)/.exec(meta)?.[1]);
+if (!agents) problems.push("meta has no agents estimate (the most agents the run can launch, conditional ones included)");
+else if (agents < calls.length) problems.push(`meta.agents ${agents} is fewer than the ${calls.length} agent calls in the script`);
+const quoted = (key) => new RegExp(`${key}:\\s*(['"\`])((?:\\\\[\\s\\S]|(?!\\1)[\\s\\S])*)\\1`).exec(meta)?.[2];
+const overrun = quoted("overrun");
+const over = [
+  estimate > 60 && `estimate ${estimate} min is over 60`,
+  tokens > 1_500_000 && `tokens ${tokens} is over 1.5 million`,
+  agents > 25 && `agents ${agents} is over 25`,
+].filter(Boolean);
+if (over.length && !/\S/.test(overrun ?? "")) problems.push(`meta ${over.join(", ")}: ask the user for permission first and record it in meta.overrun (their words and the date)`);
+else if (over.length && !/\b\d{4}-\d{2}-\d{2}\b/.test(overrun)) problems.push("meta.overrun has no date: quote the user's permission with the date (YYYY-MM-DD)");
+const override = quoted("override");
+const used = flags.filter((f) => ["--allow-fable", "--allow-full-suite", "--allow-inline-report"].includes(f));
+if (used.length && !/\S/.test(override ?? "")) problems.push(`${used.join(", ")} without meta.override: record the reason and the date (YYYY-MM-DD), with the user's words if they asked for it`);
+else if (used.length && !/\b\d{4}-\d{2}-\d{2}\b/.test(override)) problems.push("meta.override has no date: record the reason with the date (YYYY-MM-DD)");
 
 const levelMatch = /level:\s*(\d)/.exec(meta);
 const level = levelMatch ? Number(levelMatch[1]) : NaN;

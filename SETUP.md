@@ -61,7 +61,7 @@ The heading is `##` when the file is new, has no sections or has only a `#` titl
 
 Before launching agents or a workflow, the main session must read `docs/agent-workflow-rules.md`, a copy of agent-workflow-rules <version>, kept unchanged.
 
-Seven checks before any launch: is it needed and at which level; intent in three lines; explicit model and effort on every agent, with the phase table; AUTHORITY, verbatim and dated; minimum FRAMES; an estimate in minutes and tokens, with permission past 60 minutes; the lint passes.
+Seven checks before any launch: is it needed and at which level; intent in three lines, with what is out of scope and the check that proves it; explicit model and effort on every agent, with the phase table; AUTHORITY, verbatim and dated; minimum FRAMES; an estimate in minutes, tokens and agents, with permission past 60 minutes, 1.5 million tokens or 25 agents; the lint passes.
 
 This is Appendix A of the rules for this project.
 
@@ -168,7 +168,7 @@ Keep it short:
    - the file differs in a way the `CHANGELOG.md` does not explain (the user may have edited it).
 
    Then copy the files that were approved, to the same paths. Safe choice: keep the project's file. Report each file you left as it was.
-3. Keep the project block in `CLAUDE.md`. Change only the version in it, and any row a changelog entry asks for. Before 0.7.0 the block imported the rules with an `@docs/agent-workflow-rules.md` line: show it and ask whether to replace it with the read line and the checks line of step 4. Safe choice: leave it, and say in the report that the import loads the rules into every call of every agent.
+3. Keep the project block in `CLAUDE.md`. Change only the version in it, and any row or line a changelog entry asks for. Before 0.7.0 the block imported the rules with an `@docs/agent-workflow-rules.md` line: show it and ask whether to replace it with the read line and the checks line of step 4. Safe choice: leave it, and say in the report that the import loads the rules into every call of every agent.
 4. Run the checks in step 7 and report as in step 8.
 
 ## Removing
